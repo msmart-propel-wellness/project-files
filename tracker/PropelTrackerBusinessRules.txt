@@ -1,120 +1,400 @@
 PropelTracker -- FrontEnd Business Rules
+Location of files
+    PropelHtml5\App\controllers
+    PropelHtml5\App\layout\{folder}
+
+GENERAL
+    controllers.js
+
+COMPETITIONS
+    controllers.competitions.js
+    
+    ABOUT
+        controllers.competitions.about.js
+        about.html
+        
+    ADDINDIVIDUALS
+        controllers.competitions.addindividuals.js
+        addindividuals.html    
+    
+    ADDTEAMS
+        controllers.competitions.addteams.js
+        addteams.html
+    
+    BADGES
+        controllers.competitions.badges.js
+        badges.html
+    
+    DETAIL
+        controllers.competitions.detail.js
+        detail.html
+    
+    EDIT
+        controllers.competitions.edit.js
+        edit.html
+    
+    GRID
+        controllers.competitions.grid.js
+        grid.html
+    
+    PARTICIPATION
+        controllers.competitions.participation.js
+        participation.html
+
+    PARTICIPATIONINVITE
+        controllers.competitions.participationinvite.js
+        participationinvite.html    
+
+    PRIVATEFITNESS
+        controllers.competitions.privatefitness.js
+        privatefitness.html
+
+    VIEW
+        controllers.competitions.view.js
+        view.html
+
+DASHBOARD
+    controllers.dashboard.js
 
 ENTRIES
+    controllers.entries.js
+        contains data for user options under the Entries tab  (create (default), view activity, view biometric, about)
+        contains data for default entry type (fitness) in decorateEntriesUrl
+    
+    ABOUT
+        controllers.entries.about.js
+        about.html
+            static page that binds to a variable containing HTML markup and gives helpful information
 
-PropelHtml5\App\controllers\controllers.entries.js
-    contains data for user options under the Entries tab  (create (default), view activity, view biometric, about)
-    contains data for default entry type (fitness) in decorateEntriesUrl
+    DETAILBIOMETRIC
+        controllers.entries.detailbiometric.js
+        detailbiometric.html
 
-Fitness activity (id = 1; default)
-Nutrition activity (id = 2)
-Wellness activity (id = 3)
-    PropelHtml5\App\layout\entries\newfitness.html
-        link to show help text in entry form
-        selector buttons for four types of entries (fitness activity, nutrition activity, wellness, activity, biometric entry)
-        the structure of the entry form for each of the activity types (fitness, nutrition, wellness) is the same
-        the content for "which activity" changes based on the activity type
-        activity measure label for units changes based on the selected activity type
-        user can share activity as a favorite after one is selected
-        validates form data for required input, format, range, etc.
-            date: required, format dd/mm/yyyy, range is 60 days prior to entry date
-            activity: required
-            amount: see validation rules (range, values, etc)
-            notes: optional
-        show points and calories (if applicable) when entering amount values
-        submit button disabled until form validation passes
-    PropelHtml5\App\controllers\controllers.entries.newfitness.js
-        set any default values needed for the view
-        formats dates with Moment.js library (deprecated; recommended to use Day.js or Luxon)
-        computed values
-            entryDateRange
-                validates the date entered against the allowable daterange
-            isValidActivity
-                validates activity as required field
-        event handlers
-            goToForm
-                route to the selected entry form component
-            onActivitySelect
-                show the Share as Favorite button
-                set some additional form values based on the selected activity
-                evaluateMeasureParams()
-            evaluateMeasureParams
-                validate the amount against the allowed range of values
-                validate the number of digits after the decimal in the amount
-                update the calculator values for points and calories
-            doSubmit
-                create the request model from the form values
-                submit model to the api
-                on success
-                    reset form values
-                    show alert for sucess or failure
-            resetForm
-                needed only in a 'delegate' situation?
-        activate()
-            makes async calls (gets promises)
-                setLocalAppSettings
-                    the app settings should either be only loaded once at the initial load of the tracker (possibly injected in the HTML - the current tracker does this) OR should be cached.
-                    sets the min/max for entry datepicker
-                    new endpoint for getting app settings when not authenticated: /configuration/default
-                    new endpoint for getting app settings when authenticated: /configuration/user
-                getMostRecentWeight
-                    gets most recent weight entry for the member; if measure system is metric, convert lbs to kg
-                getDelegateMembers
-                    not doing this?
-                getPrivateActivities
-                    ** OLD ** successively gets private, favorite, and fitness activities
-                        get private activities at /activity/private and push Ids into array
-                        get favorite activities at /activity/favorite and push Ids into array
-                        get activity list at /activity/localized
-                    ** NEW **
-                        load one complete list of activities into the app and leverage caching
-                            public + private + favorites?
-                        render a filtered list of activities based on the view and use case
-                            filter by activityTypeId, access level (public/private)
-                            when creating an activity, filter by CanUserCreateReference and Enabled
-                            when editing an activity, follow same rule as for 'create' but also keep the current activity selected, even if it disabled
-            activate the controller with the promises
-            highlight the selected activity type button
+    DETAILFITNESS
+        controllers.entries.detailfitness.js
+        detailfitness.html
 
-Biometric
-    PropelHtml5\App\layout\entries\newbiometric.html
-        link to show help text in entry form
-        selector buttons for four types of entries (fitness activity, nutrition activity, wellness, activity, biometric entry)
-        the content for "which biometric" changes based on the biometric type
-        biometric measure label for units changes based on the selected biometric type
-        validates form data for required input, format, range, etc.
-            date: required, format dd/mm/yyyy, range is 60 days prior to entry date
-            activity: required
-            amount: see validation rules (range, values, etc)
-            notes: optional
-        submit button disabled until form validation passes
-    PropelHtml5\App\controllers\controllers.entries.newbiometric.js
-        set any default values needed for the view
-        formats dates with Moment.js (deprecated; recommended to use Day.js or Luxon)
-        computed values
-            entryDateRange
-                validates the date entered against the allowable daterange
-        event handlers
-            goToForm
-                route to the selected entry form component
-            onActivitySelect
-                set some additional form values based on the selected activity
-                evaluateMeasureParams()
-            evaluateMeasureParams
-                valid = true if no range defined
-                validate the amount against the allowed range of values
-                validate the number of digits after the decimal in the amount
-            doSubmit
-                create the request model from the form values
-                submit model to the api
-                on success
-                    reset form values
-                    show alert for sucess or failure
-            resetForm
-                needed only in a 'delegate' situation?
+    EDITBIOMETRIC
+        controllers.entries.editbiometric.js
+        editbiometric.html
+
+    EDITFITNESS
+        controllers.entries.editfitness.js
+        editfitness.html
+
+    GRIDBIOMETRIC
+        controllers.entries.gridbiometric.js
+        gridbiometric.html
+
+
+    GRIDFITNESS
+        controllers.entries.gridfitness.js
+        gridfitness.html
+
+    STATS
+        controllers.entries.stats.js
+        stats.html
+    
+    VIEWBIOMETRIC
+        controllers.entries.viewbiometric.js
+        viewbiometric.html
+    
+    VIEWFITNESS
+        controllers.entries.viewfitness.js
+        viewfitness.html
+
+    NEWFITNESS
+        controllers.entries.newfitness.js (Fitness [id:1], Nutrition [id:2], Wellness[id:3])
+            set any default values needed for the view
+            formats dates with Moment.js library (deprecated; recommended to use Day.js or Luxon)
+            computed values
+                entryDateRange
+                    validates the date entered against the allowable daterange
+                isValidActivity
+                    validates activity as required field
+            event handlers
+                goToForm
+                    route to the selected entry form component
+                onActivitySelect
+                    show the Share as Favorite button
+                    set some additional form values based on the selected activity
+                    evaluateMeasureParams()
+                evaluateMeasureParams
+                    validate the amount against the allowed range of values
+                    validate the number of digits after the decimal in the amount
+                    update the calculator values for points and calories
+                doSubmit
+                    create the request model from the form values
+                    submit model to the api
+                    on success
+                        reset form values
+                        show alert for sucess or failure
+                resetForm
+                    needed only in a 'delegate' situation?
             activate()
-                make async calls (get promises)
+                makes async calls (gets promises)
                     setLocalAppSettings
+                        the app settings should either be only loaded once at the initial load of the tracker (possibly injected in the HTML - the current tracker does this) OR should be cached.
+                        sets the min/max for entry datepicker
+                        new endpoint for getting app settings when not authenticated: /configuration/default
+                        new endpoint for getting app settings when authenticated: /configuration/user
+                    getMostRecentWeight
+                        gets most recent weight entry for the member; if measure system is metric, convert lbs to kg
                     getDelegateMembers
-                    getPrivateHealthCategories
-                activate the controller
+                        not doing this?
+                    getPrivateActivities
+                        ** OLD ** successively gets private, favorite, and fitness activities
+                            get private activities at /activity/private and push Ids into array
+                            get favorite activities at /activity/favorite and push Ids into array
+                            get activity list at /activity/localized
+                        ** NEW **
+                            load one complete list of activities into the app and leverage caching
+                                public + private + favorites?
+                            render a filtered list of activities based on the view and use case
+                                filter by activityTypeId, access level (public/private)
+                                when creating an activity, filter by CanUserCreateReference and Enabled
+                                when editing an activity, follow same rule as for 'create' but also keep the current activity selected, even if it disabled
+                activate the controller with the promises
+                highlight the selected activity type button
+        newfitness.html
+            link to show help text in entry form
+            selector buttons for four types of entries (fitness activity, nutrition activity, wellness, activity, biometric entry)
+            the structure of the entry form for each of the activity types (fitness, nutrition, wellness) is the same
+            the content for "which activity" changes based on the activity type
+            activity measure label for units changes based on the selected activity type
+            user can share activity as a favorite after one is selected
+            validates form data for required input, format, range, etc.
+                date: required, format dd/mm/yyyy, range is 60 days prior to entry date
+                activity: required
+                amount: see validation rules (range, values, etc)
+                notes: optional
+            show points and calories (if applicable) when entering amount values
+            submit button disabled until form validation passes
+
+    NEWBIOMETRIC
+        controllers.entries.newbiometric.js
+            set any default values needed for the view
+            formats dates with Moment.js (deprecated; recommended to use Day.js or Luxon)
+            computed values
+                entryDateRange
+                    validates the date entered against the allowable daterange
+            event handlers
+                goToForm
+                    route to the selected entry form component
+                onActivitySelect
+                    set some additional form values based on the selected activity
+                    evaluateMeasureParams()
+                evaluateMeasureParams
+                    valid = true if no range defined
+                    validate the amount against the allowed range of values
+                    validate the number of digits after the decimal in the amount
+                doSubmit
+                    create the request model from the form values
+                    submit model to the api
+                    on success
+                        reset form values
+                        show alert for sucess or failure
+                resetForm
+                    needed only in a 'delegate' situation?
+                activate()
+                    make async calls (get promises)
+                        setLocalAppSettings
+                        getDelegateMembers
+                        getPrivateHealthCategories
+                    activate the controller
+        newbiometric.html
+            link to show help text in entry form
+            selector buttons for four types of entries (fitness activity, nutrition activity, wellness, activity, biometric entry)
+            the content for "which biometric" changes based on the biometric type
+            biometric measure label for units changes based on the selected biometric type
+            validates form data for required input, format, range, etc.
+                date: required, format dd/mm/yyyy, range is 60 days prior to entry date
+                activity: required
+                amount: see validation rules (range, values, etc)
+                notes: optional
+            submit button disabled until form validation passes
+
+
+GOALS
+    ABOUT
+        controllers.goals.about.js
+        about.html
+
+    DETAILBIOMETRIC
+        controllers.goals.detailbiometric.js
+        detailbiometric.html
+
+    DETAILFITNESS
+        controllers.goals.detailfitness.js
+        detailfitness.html
+
+    EDITBIOMETRIC
+        controllers.goals.editbiometric.js
+        editbiometric.html
+
+    EDITFITNESS
+        controllers.goals.editfitness.js
+        editfitness.html
+
+    FORMS
+        controllers.goals.forms.js
+        forms.html
+
+    GOALS
+        controllers.goals.js
+        goals.html
+
+    NEWBIOMETRIC
+        controllers.goals.newbiometric.js
+        newbiometric.html
+
+    NEWFITNESS
+        controllers.goals.newfitness.js
+        newfitness.html
+
+    GOALS
+        controllers.goals.view.js
+        view.html
+
+HELP
+    controllers.help.js
+
+    ACHIEVEMENTRANK
+        controllers.help.achievementrank.js
+        achievementrank.html
+
+    FAQ
+        controllers.help.faq.js
+        faq.html
+
+    ICONS
+        controllers.help.icons.js
+        icons.html
+
+INBOX
+    controllers.inbox.js
+
+    ABOUT
+        controllers.inbox.about.js
+        about.html
+
+    CREATE
+        controllers.inbox.create.js
+        create.html
+
+    VIEW
+        controllers.inbox.view.js
+        view.html
+
+INCLUDE
+    CHANGEPASSWORD
+        controllers.settings.changepassword.js
+        settings.changepassword.html
+
+    COMMUNICATION
+        controllers.settings.communication.js
+        settings.communication.html
+
+    EMAIL
+        controllers.settings.email.js
+        settings.email.html
+
+    MAILADDRERSS
+        controllers.settings.mailaddress.js
+        settings.mailaddress.html
+
+    SECURITYQUESTIONS
+        controllers.settings.securityquestions.js
+        settings.securityquestions.html
+
+    TEXTING
+        controllers.settings.texting.js
+        settings.texting.html
+
+    shell.html
+
+    TEAMCOMPETITIONS
+        controllers.teams.teamcompetitions.js
+        teams.teamcompetitions.html
+
+    widgetheader.html
+
+SETTINGS
+    controllers.settings.js
+
+    AUTHPREF
+        controllers.settings.authpref.js
+        authpref.html
+
+    AUTHPREFSUCCESS
+        controllers.settings.authprefsuccess.js
+        authprefsuccess.html
+
+    AUTHVERIFY
+        controllers.settings.authverify.js
+        authverify.html
+
+    BADGES
+        controllers.settings.badges.js
+        badges.html
+
+    COMMUNICATIONS
+        controllers.settings.communications.js
+        communications.html
+
+    GROUPS
+        controllers.settings.groups.js
+        groups.html
+
+    PASSWORD
+        controllers.settings.password.js
+        password.html
+
+    PROFILE
+        controllers.settings.profile.js
+        profile.html
+TEAMS
+    controllers.teams.js
+
+    ABOUT
+        controllers.teams.about.js
+
+    ADDFAMILYMEMBERS
+        controllers.teams.addfamilymembers.js
+        addfamilymembers.html
+
+    DETAILFAMILYCAPTAIN
+        controllers.teams.detailfamilycaptain.js
+        detailfamilycaptain.html
+
+    DETAILFAMILYMEMBER
+        controllers.teams.detailfamilymember.js
+        detailfamilymember.html
+
+    DETAILSTANDARDCAPTAIN
+        controllers.teams.detailstandardcaptain.js
+        detailstandardcaptain.html
+
+    DETAILSTANDARDINVITE
+        controllers.teams.detailstandardinvite.js
+        detailstandardinvite.html
+
+    DETAILSTANDARDMEMBER
+        controllers.teams.detailstandardmember.js
+        detailstandardmember.html
+
+    EDITFORM
+        controllers.teams.editform.js
+        editform.html
+
+    INVITEMEMBERS
+        controllers.teams.invitemembers.js
+        invitemembers.html
+
+    NEWFORM
+        controllers.teams.newform.js
+        newform.html
+
+    VIEW
+        controllers.teams.view.js
+        view.html
