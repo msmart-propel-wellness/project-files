@@ -373,14 +373,80 @@ ENTRIES
                 biometrics dropdown
                 items per page dropdown
                 update filter button
-            Graph row (highcharts)
+            Chart panel (highcharts)
             List of recent biometrics entries for selected biometric
                 Date, Biometric Measure (ex. Weight), Amount, Delete?, icon for locked if cannot modify
             Pagination controls
+            Delete dialog modal
 
     GRIDFITNESS (Entries tab, View Activity button, (in Recent Activity)grid button or View All Activity Entries)
         controllers.entries.gridfitness.js
+            set any default values needed for the view
+            computed values
+                pageClass - updates class for active page
+                isDelegateSelected - are we keeping this?
+                isSubtypeSelected - syncs the selected subtype (all, fitness, nutrition, wellness) from the url
+                isActivitySelected - syncs the selected activity type from the url
+            event handlers
+                changeSelectPage - handles pagination
+                gotoUrl
+                    click handler for viewing details; handles delegates in the url
+                updateSubtype
+                    click handler; refreshes fitness activities to sync
+                updateFilter
+                    click handler for filter; refreshes fitness entries
+                prepDeleteEntry
+                    prepare items (message) for deleting an entry; show the delete modal
+                deleteEntry
+                    if app.profile is truthy
+                        create the request model
+                        send a DELETE request with the request model to the api
+                        if success
+                            reset some values
+                            getFitnessEntries()
+            activate()
+                make async calls to get promises
+                    getDelegateMembers - are we keeping this?
+                    getFitnessActivities
+                        if app.profile is truthy
+                            create the request model
+                            send a GET request with the request model to the api
+                            get activities that match activity type for use with activities dropdown list
+                    getFitnessEntries
+                        if app.profile is truthy
+                            create the request model
+                            send a GET request with the request model to the api
+                            if a specific subtype is selected
+                                get all the activities with the selected ActivityTypeId
+                            if an activity is selected (activityid >= 1)
+                                get all the entries with the selected ActivityId
+                                push those entries into an array for the grid display
+                                if there are any entries to display in the chart
+                                    set the chart object and graph title
+                                else
+                                    hide the chart panel and clear the chart data
+                                singleActivityEntriesGraph(vm.chart, "#actentriesgraph1")
+                                    activate the chart
+                                    see PropelHTML5\App\common\tvc\tvc-propel-highchart.js
+                                add the respective icon for the activity subtype
+                                set the canModify value for each entry
+                                    see PropelHTML5\App\core\helpers\permissions.js
+                                calculate the activity points and calories
+                                set any pagination values needed for correct viewing
+                activate the controller
         gridfitness.html
+            Back button
+            Filter row
+                if delegates, show delegate dropdown list
+                fitnesssubtype dropdown
+                activities dropdown
+                items per page dropdown
+                update filter button
+            Chart panel (highcharts)
+            List of recent biometrics entries for selected biometric
+                Activity icon, Date, Activity, Amount, Points, Calories burned Delete?, icon for locked if cannot modify
+            Pagination controls
+            Delete dialog modal
 
     NEWBIOMETRIC (Entries tab, Create button, Biometric sub-button)
         controllers.entries.newbiometric.js
