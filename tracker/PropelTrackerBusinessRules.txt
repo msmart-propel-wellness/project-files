@@ -157,7 +157,75 @@ ENTRIES
 
     EDITBIOMETRIC (Entries tab, View Biometric button, DetailBiometric view, Edit button)
         controllers.entries.editbiometric.js
+            set any default values needed for the view
+            formats dates with Moment.js (deprecated; recommended to use Day.js or Luxon)
+            computed values
+                entryDateRange
+                    validates the date entered against the allowable daterange
+                    inputdate is between mindate/maxdate (inclusive)
+                isDelegateSelected
+                    are we keeping this?
+            event handlers
+                onActivitySelect
+                    if a biometric is selected
+                        set some additional form values based on the selected activity
+                        evaluateMeasureParams()
+                evaluateMeasureParams
+                    valid = true if no range defined
+                    validate the amount against the allowed range of values
+                    validate the number of digits after the decimal in the amount
+                doSubmit
+                    if form is valid,
+                        create the request model from the form values
+                        submit model to the api
+                        on success, return to the calling url
+                activate()
+                    make async calls (get promises)
+                        setLocalAppSettings
+                            the app settings should either be only loaded once at the initial load of the tracker (possibly injected in the HTML - the current tracker does this) OR should be cached.
+                            sets the min/max for entry datepicker
+                            new endpoint for getting app settings when not authenticated: /configuration/default
+                            new endpoint for getting app settings when authenticated: /configuration/user
+                        getDelegateMembers
+                            not keeping?
+                        getEditDetail
+                            if app.profile and activityid are truthy
+                                create the request model
+                                make a GET request to the api with the request model
+                                on success, setEditDetail()
+                                else return to calling url
+                        getPrivateHealthCategories
+                            if app.profile is truthy
+                                create a request model
+                                send the model with a GET request to api
+                                save result as array of privateHealthCategories
+                                getHealthCategories()
+                    activate the controller
+            methods
+                getHealthCategories
+                    if app.profile is truthy
+                        create a request model
+                        make a GET request to the api
+                        if an object gets returned
+                            create two lists of biometrics (public, private)
+                            assign vm.allhealthcategories to return object
+                            modify the biometric names to say 'disabled' if CanUserCreateReference == false
+                                and Enabled == false
+                            separate the biometrics into public and private
+                            ** not sure what else is happening here
+                                build the privatecategory list
+
         editbiometric.html
+            link to show help text in entry form
+            selector buttons for four types of entries (fitness activity, nutrition activity, wellness, activity, biometric entry)
+            the content for "which biometric" changes based on the biometric type
+            biometric measure label for units changes based on the selected biometric type
+            validates form data for required input, format, range, etc.
+                date: required, format dd/mm/yyyy, range is 60 days prior to entry date
+                activity: required
+                amount: see validation rules (range, values, etc)
+                notes: optional
+            submit button disabled until form validation passes
 
     EDITFITNESS (Entries tab, View Activity button, DetailFitness view, Edit button)
         controllers.entries.editfitness.js
@@ -287,9 +355,28 @@ ENTRIES
                 activate()
                     make async calls (get promises)
                         setLocalAppSettings
+                            the app settings should either be only loaded once at the initial load of the tracker (possibly injected in the HTML - the current tracker does this) OR should be cached.
+                            sets the min/max for entry datepicker
+                            new endpoint for getting app settings when not authenticated: /configuration/default
+                            new endpoint for getting app settings when authenticated: /configuration/user
                         getDelegateMembers
+                            are we still doing this?
                         getPrivateHealthCategories
+                            if app.profile is truthy
+                                create a request model
+                                send the model with a GET request to api
+                                save result as array of privateHealthCategories
+                                getHealthCategories()
                     activate the controller
+            methods
+                getHealthCategories
+                    if app.profile is truthy
+                        create a request model
+                        make a GET request to the api
+                        if an object gets returned
+                            create two lists of biometrics (public, private)
+                            assign vm.healthcategories to public list
+                            ** not sure what else is happening here
         newbiometric.html
             link to show help text in entry form
             selector buttons for four types of entries (fitness activity, nutrition activity, wellness, activity, biometric entry)
