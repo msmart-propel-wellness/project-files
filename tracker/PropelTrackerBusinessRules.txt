@@ -321,7 +321,62 @@ ENTRIES
 
     GRIDBIOMETRIC (Entries tab, View Biometric button, (in Latest Biometrics) grid button or View All Biometric Entries)
         controllers.entries.gridbiometric.js
+            set any default values needed for the view
+            computed values
+                pageClass - updates class for active page
+                isDelegateSelected - are we keeping this?
+                isActivitySelected
+            event handlers
+                changeSelectPage - handles pagination
+                gotoUrl
+                    click handler for viewing details; handles delegates in the url
+                updateFilter
+                prepDeleteEntry
+                    prepare items (message) for deleting an entry; show the delete modal
+                deleteEntry
+                    if app.profile is truthy
+                        create the request model
+                        send a DELETE request with the request model to the api
+                        if success
+                            reset some values
+                            getBiometricEntries()
+            activate()
+                make async calls to get promises
+                    getDelegateMembers - are we keeping this?
+                    getHealthCategories
+                        if app.profile is truthy
+                            create the request model
+                            send a GET request with the request model to the api
+                            assign response object to model used for activities dropdown list
+                    getBiometricEntries
+                        if app.profile is truthy
+                            create the request model
+                            send a GET request with the request model to the api
+                            if an activity is selected (activityid >= 1)
+                                get all the entries with the selected BiometricId
+                                push those entries into an array for the grid display
+                                if there are any entries to display in the chart
+                                    set the chart object and graph title
+                                else
+                                    hide the chart panel and clear the chart data
+                                singleBiometricEntriesGraph(vm.chart, "#bioentriesgraph1")
+                                    activate the chart
+                                    see PropelHTML5\App\common\tvc\tvc-propel-highchart.js
+                                set the canModify value for each entry
+                                    see PropelHTML5\App\core\helpers\permissions.js
+                                set any pagination values needed for correct viewing
+                activate the controller
         gridbiometric.html
+            Back button
+            Filter row
+                if delegates, show delegate dropdown list
+                biometrics dropdown
+                items per page dropdown
+                update filter button
+            Graph row (highcharts)
+            List of recent biometrics entries for selected biometric
+                Date, Biometric Measure (ex. Weight), Amount, Delete?, icon for locked if cannot modify
+            Pagination controls
 
     GRIDFITNESS (Entries tab, View Activity button, (in Recent Activity)grid button or View All Activity Entries)
         controllers.entries.gridfitness.js
