@@ -585,11 +585,118 @@ ENTRIES
     
     VIEWBIOMETRIC (Entries tab, View Biometric button)
         controllers.entries.viewbiometric.js
+            set any default values needed for the view
+            event handlers
+                gotoUrl
+                    click handler for viewing details; handles delegates in the url
+                    navigates to DetailBiometric or NewBiometric
+                drillDown
+                    click handler that navigates to GridBiometric
+                deleteRecord
+                    calls deleteEntry
+                viewAll
+                    navigates to GridBiometric with activityId set to -1
+                populateMostRecentEntries
+                    if app.profile is truthy and entries list contains at least 1 entry
+                        create a new request model
+                        send a GET request with the model to the api (getMostRecentByHealthCategory)
+                        foreach most recent entry by health category
+                            foreach entry
+                                if the entry (category) biometridId matches the most recent entry BiometricId
+                                    populate these values for entries
+                                        BiometricCheckInId
+                                        BiometricCheckInAmount
+                                        BiometricCheckInDate
+                                        DataProviderInfo (from _$help.DataProviderNameSourceFormatter)
+                deleteEntry
+                    if app.profile is truthy
+                        create a request model
+                        send a DELETE request with the model to the api
+                        call getBiometricEntries
+            activate()
+                make async calls (get promises)
+                    getBiometricMostRecentEntries (get most recent entry for 10 different biometrics)
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the model to the api (getHealthCategories)
+                            if data is returned
+                                for each item in data returned
+                                    create a default data object for the item
+                                    push item into entries array with sort order value
+                                        sort order
+                                            weight
+                                            height
+                                            bmi
+                                            blood glucose
+                                            blood pressure (systolic)
+                                            blood pressure (diastolic)
+                                            cholesterol LDL
+                                            cholesterol HDL
+                                            cholesterol total
+                                            cholesterol triglycerides 
+                    getChartInfo
+                        if app.profile is truthy
+                            set relevant date values
+                                current date = today
+                                cutoff date = 1 year prior to today
+                            create a request model
+                            send a GET request with the model to the api (getBiometricEntries)
+                            if data is sent back
+                                create data objects for the chart (progseries)
+                            if data exists in progseries
+                                create a chart initialization object
+                                call singleBiometricEntriesGraph to activate the graph
         viewbiometric.html
+            Chart panel
+                highlights Weight or possibly the latest checkin?
+            Biometrics panel (latest entries)
+                shows 10 of the most popular biometrics
     
     VIEWFITNESS (Entries tab, View Activity button)
         controllers.entries.viewfitness.js
+            set any default values needed for the view
+            event handlers
+                gotoUrl
+                    click handler for viewing details; handles delegates in the url
+                    navigates to DetailFitness
+                drillDown
+                    click handler that navigates to GridFitness
+                deleteRecord
+                    calls deleteEntry
+                getIcon
+                    gets the appropriate icon for the activity subtype
+                viewAll
+                    navigates to GridFitness with activityId set to -1
+                deleteEntry
+                    if app.profile is truthy
+                        create a request model
+                        send a DELETE request with the model to the api (deleteFitnessEntry)
+                        call getFitnessEntries
+            activate()
+                make async calls (get promises)
+                    getFitnessEntries
+                    getChartInfo
+                        if app.profile is truthy
+                            set relevant date values
+                                current date = today
+                                cutoff date = 1 year prior to today
+                            create a request model
+                            send a GET request with the model to the api (getFitnessEntries)
+                            if data is sent back
+                                create data objects for the chart in one of three series
+                                    fitnessseries
+                                    nutritionseries
+                                    wellnessseries
+                            if data exists in any of the 3 series
+                                create a chart initialization object
+                                call activityEntriesByTypeGraph to activate the graph
+                        else
+                            hide the chart panel
         viewfitness.html
+            Chart panel
+                highlights latest checkins for Fitness, Nutrition, and Wellness activities
+            Recent Activity panel
+                shows specific activity checkins, allowing you to view details or drill down to additional data
 
 GOALS
     controllers.goals.js
