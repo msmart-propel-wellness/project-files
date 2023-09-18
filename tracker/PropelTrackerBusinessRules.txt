@@ -700,7 +700,7 @@ ENTRIES
 
 GOALS
     controllers.goals.js
-    goals.html
+        contains json data for the three subitems under goals tab (View, Create, Aboutt)
 
     ABOUT (Goals tab, About button)
         controllers.goals.about.js
@@ -708,13 +708,130 @@ GOALS
             see PropelHTML5\App\core\locale\en-US\basedata.js
         about.html
 
-    DETAILBIOMETRIC
+    DETAILBIOMETRIC (Goals tab, View button, select a biometric goal)
         controllers.goals.detailbiometric.js
+            set any default values needed for the view
+            computed values
+            event handlers
+                gotoEdit
+                    navigates to GoalsEditBiometric
+                deleteGoal
+                    hides the delete goal dialog modal
+                    calls doDeleteGoal
+            methods
+                doDeleteGoal
+                    if app.profile is truthy
+                        create the request model
+                        send a DELETE request with the model to the api (DeleteBiometricGoal)
+                getChartInfo
+                    if app.profile is truthy
+                        create a request model
+                        send a GET request with the model to the api (getHealthGoalEntries)
+                        if returned items exist (are truthy)
+                            create items for the progress series; push to an array
+                            if biometric measure name == null, set label to default
+                            else set to goalInfo.BiometricMeasureName
+                            if goalInfo.DateIntervalId == "day"
+                                set local variable dateinterval to "day", else "weeks"
+                            create a chart initialization object
+                            initialize the chart with the object (biometricGoalDetail)
+                        else hide the chart panel
+            activate()
+                make async calls (get promises)
+                    getBiometricGoals
+                        if app.profile is truthy
+                            create a request model
+                            make a GET call with request model to api (getBiometricGoalDetail)
+                            set scope/view values for items displayed in the detail panel from the returned object
+                            if DateIntervalId == "day", then set label to "days"
+                            if DateIntervalId == "week, then set label to "weeks"
+                            getChartInfo()
+                activate the controller
         detailbiometric.html
+            Chart panel with goal and progress
+            Goal panel with details
+                Goal details
+                    Start goal info
+                    End goal info
+                    Biometric measure to track - name, amount data provider
+                    Notes
+                Edit button
+                Delete button
 
-    DETAILFITNESS
+    DETAILFITNESS (Goals tab, View button, select an activity goal)
         controllers.goals.detailfitness.js
+            set any default values needed for the view
+            computed values
+            event handlers
+                gotoEdit
+                    navigates to GoalsEditFitness
+                deleteGoal
+                    hides the delete goal dialog modal
+                    calls doDeleteGoal
+            methods
+                doDeleteGoal
+                    if app.profile is truthy
+                        create the request model
+                        send a DELETE request with the model to the api (DeleteFitnessGoal)
+                getFitnessActivities(subtype)
+                    if app.profile is truthy
+                        create a request model
+                        send a GET request with the model to the api (getFitnessActivities)
+                        for each item in the response object
+                            get the activityTypeId
+                            if subtype == activityTypeId, the push item onto qualifiedActivities array
+                getChartInfo
+                    if app.profile is truthy
+                        create a request model
+                        if returned items exist
+                            push items to progseries by looping through returned results
+                                activityAmount = 1 if goalInfo.ActivityMeasureName == null; else result[i].ActivityCheckInAmount || 0
+                                entrydate = moment(obj[i].ActivityCheckInDate).utc().valueOf();
+                                item = [ entrydate, activityAmount ]
+                            measurename = basedata.chartlbl if goalinfo.ActivityMeasureName == null
+                            else measurename = goalinfo.ActivityMeasureName
+                            if goalinfo.DataIntervalId == "day".id
+                                datainterval = "day"
+                                dataintervallblb = basedata.chartlbl19
+                            else
+                                datainterval = "week"
+                                dataintervallblb = basedata.chartlbl18
+                            create a chart initialization object
+                            initialize the chart with the object (activityGoalDetail)
+                        else hide the chart panel
+            activate()
+                make async calls (get promises)
+                    getFitnessGoals
+                        if app.profile is truthy
+                            create a request model
+                            make a GET call with the request model to api (getFitnessGoalDetail)
+                            if response object is truthy
+                                getChartInfo()
+                                set scope/view values for items displayed in the detail panel from the return object
+                                if ActivityMeasureName == null, set measurename to basedata.entrieslbl
+                                else set measurename to ActivityMeasureName (can do null coalesce)
+                                if DateIntervalId == "day", set scope.datainterval = basedata.day; set scope.dataintervallbl = basedata.days
+                                if DateIntervalId == "week", set scope.dataInterval = basedata.week; set scope.dataInterval = basedata.weeks
+                                if "all activities" selected, 
+                                    show control for all activities, 
+                                    hide control for selected activities
+                                    getFitnessActivities(subtype)
+                                else
+                                    hide control for all activities
+                                    show control for selected activities
+                        else
+                            redirect to GoalsView
+                activate the controller
         detailfitness.html
+            Chart panel with goal and progress
+            Goal panel with details
+                Goal details
+                    Start goal info
+                    End goal info
+                    Activity to track - name, amount, data provider
+                    Notes
+                Edit button
+                Delete button
 
     EDITBIOMETRIC
         controllers.goals.editbiometric.js
@@ -728,17 +845,21 @@ GOALS
         controllers.goals.forms.js
         forms.html
 
-    NEWBIOMETRIC
+    NEWBIOMETRIC (Goals tab, Create button, Biometric subbutton)
         controllers.goals.newbiometric.js
         newbiometric.html
 
-    NEWFITNESS
+    NEWFITNESS (Goals tab, Create button, Fitness/Nutrition/Wellness subbutton)
         controllers.goals.newfitness.js
         newfitness.html
 
     VIEW (Goals tab, View button)
         controllers.goals.view.js
         view.html
+            Activity Goals
+            Biometric Goals
+            Past Activity Goals
+            Past Biometric Goals
 
 HELP
     controllers.help.js
