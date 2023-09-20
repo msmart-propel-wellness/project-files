@@ -1136,7 +1136,15 @@ GOALS
 
     FORMS (Goals tab, Create button)
         controllers.goals.forms.js
+            set any default values needed for the view
+            event handlers
+                gotoForm
+                    routes to GoalsNewFitness (with subtype Fitness, Nutrition, Wellness) or GoalsNewBiometric
+            activate()
+                activate the controller
         forms.html
+            Displays four goal categories: fitness, nutition, wellness, biometric
+            Select button (with click handlers) and description for each category
 
     NEWBIOMETRIC (Goals tab, Create button, Biometric subbutton)
         controllers.goals.newbiometric.js
