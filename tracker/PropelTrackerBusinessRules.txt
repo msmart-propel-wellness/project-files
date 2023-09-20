@@ -835,11 +835,304 @@ GOALS
 
     EDITBIOMETRIC
         controllers.goals.editbiometric.js
+            set any default values needed for the view
+            computed values
+            event handlers
+                goalDateRange (when StartDate changed)
+                    validates input date to be between min/max, or same as original date
+                evaluateDurationRange (when duration changed)
+                    if date-interval-day is checked, validate duration as between 1 and 365
+                    else, validate duration as between 1 and 52
+                updateMeasureParams (when measures selection is changed)
+                    if event.measures is truthy
+                        find the selected biometricId and biometricMeasureId in healthcategories
+                            and set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
+                        call evaluateMeasureParams to validate
+                updateIntervalType
+                    -- TODO --
+                whichMeasureSelected
+                    updateMeasureParams()
+                whichDateIntervalChecked
+                    * prevents user from changing date interval type (day, week)
+                    sets checked attribute for 'day' as checked if 'day' radio selected and editinfo.DateIntervalId == day
+                    sets checked attribute for 'week' as checked if 'week' radio selected and editinfo.DateIntervalId == week
+                doSubmit
+                    create a request model
+                        BiometricGoalId: from routeparams or model
+                        GoalMeasureId: (was hard-coded as 2)
+                        BiometricMeasureId: (get from form)
+                        BiometricOpitonId: (was hard-coded as 1)
+                        AggregateFunctionId: (was hard-coded as 2)
+                        BiometricGoalName: get from form
+                        StartDate: get from form
+                        CurrentAmt: get from form
+                        GoalAmt: get from form
+                        DateIntervalId: scope value
+                        DateIntervalCount: get from form
+                        Notes: get from form
+                        BiometricIds: get from form
+                        BiometricTypeIds: (was hard-coded as [1])
+                        AllBiometrics: (was hard-coded as false)
+                    send a POST request with model to the api (updateBiometricGoal)
+                    on success, return to GoalsDetailBiometric view with current goalId
+            other methods
+                evaluateMeasureParams
+                    return as valid if no range is defined
+                    evaluate current amount (range, digits)
+                    evaluate goal amount (range, digits)
+                getBiometricEditDetail
+                    if app.profile is truthy and vm.editinfo is not empty []
+                        set form values (models) and validation states for 
+                            Measures
+                            Goalname
+                            StartDate
+                            Duration
+                            Current amount
+                            Goal amount
+                        update date interval labels (week, day)
+                        updateIntervalType()
+                        set selected activities list
+                validateGoal
+                    if app.profile is truthy
+                        create a request model
+                        send a POST request with the request model to the api (validateHealthGoal)
+                        if no exception returned, set validation as true
+                        else (exception caught) set validation as false
+            activate()
+                make async calls (get promises)
+                    setLocalAppSettings
+                        if app.appsettings is truthy
+                            $scope.goalmaxage = app.appsettings.goalmaxagebio
+                            $scope.goalmaxfuture = app.appsettings.goalmaxfuturebio
+                            initialize datepicker object values
+                                startdate = $scope.goalmaxage
+                                enddate = $scope.goalmaxfuture
+                    loadBiometricEditDetail
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the model to the api
+                            if return object is truthy
+                                assign object to vm.editinfo
+                                getBiometricEditDetail()
+                            else route to GoalsView
+                    getHealthCategories
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the model to the api (getHealthCategories)
+                            if return object is truthy
+                                for each item in return object
+                                    create a "comkey" property in the object (BiometricId + "|" + BiometricMeasureId)
+                                    if item.CanUserCreateReference && item.Enabled || item.BiometridId == $scope.biometridid (item being edited?)
+                                        if !(item.CanUserCreateReference && item.Enabled)
+                                            item.BiometricName += ' - Disabled'
+                                        push onto temp array
+                                assign temp array to vm.healthcategories
+                set a watcher on goalname, startdate, duration to call validateGoal() when all three are not undefined
         editbiometric.html
+            Back button
+            link to show help text in entry form
+            Edit biometric goal panel
+                Goal name - required, minlength = 3, maxlength = 100 (or 50?), unique for time frame
+                Goal interval - day or week
+                Start date - required, date pattern MM/dd/YYYY, min/max dates
+                Duration - days (1 to 365); weeks (1 to 52)
+                Biometric (e.g., Weight)
+                Current amount - required, pattern, validate amount against selected biometric range, decimal digits
+                Goal amount - required, pattern, validate amount against selected biometric range, decimal digits
+                Notes (optional)
+                biometric measure label for units changes based on the selected biometric type
+            ** no Cancel button
+            Submit button disabled until form validation passes
 
     EDITFITNESS
         controllers.goals.editfitness.js
+            set any default values needed for the view
+            computed values
+                anyFitnessActivities(subtype, activitymeasureid)
+                    foreach item in vm.fitactivities
+                        if ((activityMeasureId == Entries || activityMeasureId == item.ActivityMeasureId) 
+                                && (subtype (fitness, nutrition, wellness) == acttype))
+                            return true
+                    return false
+            event handlers
+                goalDateRange
+                    validates input date to be between min/max, or same as original date
+                evaluateDurationRange
+                    if date-interval-day is checked, validate duration as between 1 and 365
+                    else validate duration as between 1 and 52
+                updateMeasureParams
+                    if event.measures is >= 1
+                        find the selected activityMeasureId in vm.measures
+                            set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
+                        call evaluateMeasureParams to validate
+                        getFitnessActivities(event.measures) // filter activities by measure
+                    else if event.measures == -1000 ("Entries")
+                        set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
+                    else do nothing
+
+                toggleSelectedActivities
+                    show/hide selected activities div
+                onChangeSelectedActivities -- UNUSED
+                isSelectedActivitiesRequired
+                    return !activityselecttype === 'all' (return true if activityselecttype == userselected, else return false)
+                updateIntervalType
+                    set $scope values for [...] based on selected interval type (day, week)
+                        dateintervalid
+                        intervaltype
+                        intervaltypeplural
+                    evaluateDurationRange()
+                    updateMeasureParams()
+                whatActivitiesSelected
+                    ng-selected handler for marking an activities as selected from vm.editinfo.ActivityIds
+                whichDateIntervalChecked
+                    ng-checked handler for marking the selected dateinterval as checked from vm.editinfo.DateIntervalID
+                whichMeasureSelected -- UNUSED
+                doSubmit
+                    if form is valid
+                        var goalMeasureId, activityMeasureId, activityIds;
+                        var allActivitiesCategories = false;
+                        if selected measure == 'Entries'
+                            goalMeasureId = 1
+                            activityMeasureId = null
+                        else
+                            goalMeasureId = 2
+                            activityMeasureId = Number(selected measure)
+                        if selected activity type = 'all'
+                            activityIds = null
+                            allActivitiesCategories = true
+                        else
+                            activityIds = selectedActivitiesList
+                        create a request model
+                            ActivityGoalName: get from form
+                            StartDate: get from form
+                            ActivityMeasureId: activityMeasureId
+                            Notes: get from form
+                            DateIntervalCount: get from form (duration)
+                            DateIntervalId: get from scope variable
+                            CurrentAmt: get from form
+                            GoalAmt: get from form
+                            ActivityTypeIds: [ get from route params or view model ] (as array)
+                            ActivityIds: activityIds
+                            AllActivities: allActivitiesCategories
+                            AggregateFunctionId: 1 (hard coded)
+                            GoalMeasureId: goalMeasureId
+                            ActivityGoalId: get from route params or view model
+                        send a POST request with the request model to the api (updateFitnessGoal)
+                        on success, route back to GoalDetailFitness with goalId
+                getFitnessActivities(activityMeasureId)
+                    if app.profile is truth and vm.fitactivities contains data (length >= 1)
+                        initialize qualifiedActivities array
+                        get subtype from route params
+                        foreach item in vm.fitactivities
+                            acttype = item.ActivityTypeId
+                            if ((activityMeasureId == Entries || activityMeasureId == item.ActivityMeasureId) 
+                                && (subtype (fitness, nutrition, wellness) == acttype))
+                                    push item to qualified activities array
+                        if the result is no qualified activities, show a negative validation message
+                getFitnessEditDetails
+                    if app.profile is truthy and vm.editinfo is not empty []
+                        set form values (models) and validation states for 
+                            Measures
+                                if vm.editinfo.ActivityMeasureId == null
+                                    Measures = "Entries"
+                                else
+                                    Measures = vm.editinfo.ActivityMeasureId
+                            Goalname
+                            StartDate
+                            Duration
+                            Current amount
+                            Goal amount
+                            Notes
+                        Set selectedActivitiesList to vm.editinfo.ActivityIds
+                        if vm.editinfo.AllActivities == true
+                            activityselecttype = 'all
+                        else
+                            activityselecttype = 'userselected'
+                            toggleSelectedActivities('show')
+                        update date interval labels (week, day)
+                        updateIntervalType()
+                        if activityIds contains data (length >= 1)
+                            show selected activities div
+                validateGoal
+                    if app.profile is truthy
+                        create a request model
+                        send a POST request with the request model to the api (validateFitnessGoal)
+                        if no exception returned, set validation ("unique for time") as true
+                        else (exception caught) set validation as false
+            other methods
+                evaluateMeasureParams
+                    return as valid if no range is defined
+                    evaluate current amount (range, digits)
+                    evaluate goal amount (range, digits)
+            activate()
+                make async calls (get promises)
+                    setLocalAppSettings
+                        if app.appsettings is truthy
+                            $scope.goalmaxage = app.appsettings.goalmaxagebio
+                            $scope.goalmaxfuture = app.appsettings.goalmaxfuturebio
+                            initialize datepicker object values
+                                startdate = $scope.goalmaxage
+                                enddate = $scope.goalmaxfuture
+                    loadFitnessEditDetails
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the model to the api
+                            if return object is truthy
+                                assign object to vm.editinfo
+                    getActivityMeasureMap
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with request model to api (getActivityMeasureMap)
+                            foreach returned item
+                                if item.ActivityTypeId == subtype of item being edited
+                                    push onto submeasures array
+                            assign vm.measuremap = submeasures
+                    getActivityMeasures
+                        if app.profile is truthy and measuremap and fitnessactivities arrays contain data
+                            create a request model
+                            send a GET request with the model to the api (getActivityMeasures)
+                            foreach item in measuremap
+                                activitymeasureid = item.ActivityMeasureId
+                                foreach obj in returned data
+                                    if activitymeasureid = obj[i].ActivityMeasureId
+                                        if (anyFitnessActivities(subtype, obj[x].ActivityMeasureID))
+                                            push the object to the vm.measures array
+                            add an item to the beginning of the vm.measures array (unshift)
+                                var item = {
+                                    "ActivityMeasureID": -1000,
+                                    "ActivityMeasureName": basedata.entrieslbl,
+                                    "MaxValue": 0,
+                                    "MinValue": 0,
+                                    "NumberDecimalDigits": 0
+                                };
+                        getFitnessEditDetails()
+                    getMasterActivityList
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getFitnessActivities)
+                            set vm.fitactivities = returned items
+                set a watcher on goalname, startdate, duration to call validateGoal() when all three are not undefined
+                activate the controller
         editfitness.html
+            Back button
+            link to show help text in entry form
+            Edit fitness goal panel
+                Goal name - required, minlength = 3, maxlength = 100 (or 50?), unique for time frame
+                Goal interval - day or week
+                Start date - required, date pattern MM/dd/YYYY, min/max dates
+                Duration - days (1 to 365); weeks (1 to 52)
+                Activity Measures (e.g., Entries, minutes, steps, times) - required, no selected activities
+                Activity select type (Radio)
+                    All
+                    User selected
+                        multi-select dropdown (hidden/disabled if All selected)
+                View Activities List (link to open modal)
+                Current amount - required, pattern, validate amount against selected biometric range, decimal digits
+                Goal amount - required, pattern, validate amount against selected biometric range, decimal digits
+                Notes (optional)
+                Fitness measure label for current and goal changes based on the selected activity measure
+            ** no Cancel button
+            Submit button disabled until form validation passes
 
     FORMS (Goals tab, Create button)
         controllers.goals.forms.js
