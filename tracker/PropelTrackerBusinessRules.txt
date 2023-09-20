@@ -1218,7 +1218,11 @@ GOALS
                         on success, if object returned
                             route to GoalsDetailBiometric with the BiometricGoalId
                 validateGoal
-                    -- CONTINUE HERE --
+                    if app.profile is truthy
+                        create a request model
+                        send a POST request with the request model to the api (validateHealthGoal)
+                        if no exception returned, set validation as true
+                        else (exception caught) set validation as false
             other methods
             activate()
                 make async calls (get promises)
@@ -1253,7 +1257,162 @@ GOALS
 
     NEWFITNESS (Goals tab, Create button, Fitness/Nutrition/Wellness subbutton)
         controllers.goals.newfitness.js
+            set any default values needed for the view
+            computed values
+                isSelectedActivitiesRequired
+                    return !activityselecttype === 'all' (return true if activityselecttype == userselected, else return false)
+                    ** or using jQuery -- $('#selectedactivities :checked)
+                anyFitnessActivities(subtype, activitymeasureid)
+                    foreach item in vm.fitactivities
+                        if ((activityMeasureId == Entries || activityMeasureId == item.ActivityMeasureId) 
+                                && (subtype (fitness, nutrition, wellness) == acttype))
+                            return true
+                    return false
+            event handlers
+                goalDateRange
+                    validates input date to be between min/max
+                evaluateDurationRange
+                    if date-interval-day is checked, validate duration.rangeDays as between 1 and 365
+                    else validate duration.rangeWeeks as between 1 and 52
+                updateMeasureParams
+                    if event.measures is >= 1
+                        set $scope.amtmeasure = $('select[name="measures"] :selected').text();
+                        find the selected activityMeasureId in vm.measures
+                            set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
+                        evaluateMeasureParams()
+                        getFitnessActivities(event.measures) // filter activities by measure
+                    else if event.measures == -1000 ("Entries")
+                        set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
+                        evaluateMeasureParams()
+                        getFitnessActivities(-1000)
+                    else do nothing                
+                toggleSelectedActivities
+                    show/hide selected activities div
+                    if 'show'
+                        allActivitiesCategories = false
+                        set validity for selectedActivitiesList.required = false
+                        show the div
+                    else
+                        allactivityids = []
+                        allActivitiesCategories = true
+                        set validity for selectedActivitiesList.required = true
+                        hide the div
+                onChangeSelectedActivities
+                    sets viewmodel variable activityids = $('select[name="selectedactivitieslist"]').val() -- used for doSubmit
+                updateIntervalType
+                    set $scope values for [...] based on selected interval type (day, week)
+                        dateintervalid
+                        intervaltype
+                        intervaltypeplural
+                    evaluateDurationRange()
+                    updateMeasureParams()
+                doSubmit
+                    if form is valid
+                        var goalMeasureId, activityMeasureId
+                        if selected measure == 'Entries'
+                            goalMeasureId = 1
+                            activityMeasureId = null
+                        else
+                            goalMeasureId = 2
+                            activityMeasureId = Number(selected measure)
+                        create a request model
+                            ActivityGoalName: get from form
+                            StartDate: get from form
+                            ActivityMeasureId: activityMeasureId
+                            Notes: get from form
+                            DateIntervalCount: get from form (duration)
+                            DateIntervalId: get from scope variable
+                            CurrentAmt: get from form
+                            GoalAmt: get from form
+                            ActivityTypeIds: [ Number($routeParams.subtype) ] (as array)
+                            ActivityIds: activityIds
+                            AllActivities: allActivitiesCategories
+                            AggregateFunctionId: 1 (hard coded)
+                            GoalMeasureId: goalMeasureId
+                        send a POST request with the request model to the api (insertFitnessGoal)
+                        on success, route back to GoalDetailFitness with new ActivityGoalId
+                validateGoal
+                    if app.profile is truthy
+                        create a request model
+                        send a POST request with the request model to the api (validateFitnessGoal)
+                        if no exception returned, set validation for goal name.uniquefortime as true
+                        else (exception caught) set validation as false
+            other methods
+                evaluateMeasureParams
+                    set validity as true if no minrange/maxrange defined
+                    evaluate validity of current amount (range, digits)
+                    evaluate validity of goal amount (range, digits)
+                getFitnessActivities(activitymeasureid)
+                    if app.profile is truthy
+                        initialize qualifiedActivities array
+                        get subtype from route params
+                        foreach item in vm.fitactivities
+                            acttype = item.ActivityTypeId
+                            if ((activityMeasureId == Entries || activityMeasureId == item.ActivityMeasureId) 
+                                && (subtype (fitness, nutrition, wellness) == acttype))
+                                    push item to qualified activities array
+                        if the result is no qualified activities, show a negative validation message
+            activate()
+                make async calls to get promises
+                    setLocalAppSettings
+                        if app.appsettings is truthy
+                            $scope.goalmaxage = app.appsettings.goalmaxageact
+                            $scope.goalmaxfuture = app.appsettings.goalmaxfutureact
+                            initialize datepicker object values
+                                startdate = $scope.goalmaxage
+                                enddate = $scope.goalmaxfuture
+                    getActivityMeasureMap
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with request model to api (getActivityMeasureMap)
+                            foreach returned item
+                                if item.ActivityTypeId == subtype of item being edited
+                                    push onto submeasures array
+                            assign vm.measuremap = submeasures
+                    getActivityMeasures
+                        if app.profile is truthy and measuremap and fitnessactivities arrays contain data
+                            create a request model
+                            send a GET request with the model to the api (getActivityMeasures)
+                            foreach item in measuremap
+                                activitymeasureid = item.ActivityMeasureId
+                                foreach obj in returned data
+                                    if activitymeasureid = obj[i].ActivityMeasureId
+                                        if (anyFitnessActivities(subtype, obj[x].ActivityMeasureID))
+                                            push the object to the vm.measures array
+                            add an item to the beginning of the vm.measures array (unshift)
+                                var item = {
+                                    "ActivityMeasureID": -1000,
+                                    "ActivityMeasureName": basedata.entrieslbl,
+                                    "MaxValue": 0,
+                                    "MinValue": 0,
+                                    "NumberDecimalDigits": 0
+                                };
+                    getMasterActivityList
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getFitnessActivities)
+                            set vm.fitactivities = returned items   
+                activate the controller
         newfitness.html
+            Back button
+            link to show help text in entry form
+            Edit fitness goal panel
+                Goal name - required, minlength = 3, maxlength = 100 (or 50?), unique for time frame
+                Goal interval - day or week
+                Start date - required, date pattern MM/dd/YYYY, min/max dates
+                Duration - days (1 to 365); weeks (1 to 52)
+                Activity Measures (e.g., Entries + [...] - depends on activity category) - required, no selected activities
+                Activity select type (Radio)
+                    All
+                    Selected Activities
+                        multi-select dropdown (hidden/disabled if All selected)
+                View Activities List (link to open modal)
+                Current amount - required, pattern, validate amount against selected biometric range, decimal digits
+                Goal amount - required, pattern, validate amount against selected biometric range, decimal digits
+                Notes (optional)
+                Fitness measure label for current and goal changes based on the selected activity measure
+            ** no Cancel button
+            Submit button disabled until form validation passes
 
     VIEW (Goals tab, View button)
         controllers.goals.view.js
