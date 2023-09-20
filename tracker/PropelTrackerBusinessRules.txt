@@ -700,7 +700,7 @@ ENTRIES
 
 GOALS
     controllers.goals.js
-        contains json data for the three subitems under goals tab (View, Create, Aboutt)
+        contains json data for the three subitems under goals tab (View, Create, About)
 
     ABOUT (Goals tab, About button)
         controllers.goals.about.js
@@ -969,7 +969,6 @@ GOALS
                     else if event.measures == -1000 ("Entries")
                         set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
                     else do nothing
-
                 toggleSelectedActivities
                     show/hide selected activities div
                 onChangeSelectedActivities -- UNUSED
@@ -1416,11 +1415,64 @@ GOALS
 
     VIEW (Goals tab, View button)
         controllers.goals.view.js
+            set any default values needed for the view
+            computed values
+            event handlers
+                goToFitnessDetail
+                    route to GoalsDetailFitness with goalId
+                goToBiometricDetail
+                    route to GoalsDetailBiometric with goalId
+            other methods
+            activate()
+                make async calls to get promises
+                    getBiometricGoals
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with request model to the api (getBiometricGoals)
+                            set vm.biometricGoals = returned data items
+                    getFitnessGoals
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getFitnessGoals)
+                            set vm.fitnessGoals = returned data items
+                            foreach item in vm.fitnessGoals
+                                switch on item.ActivityTypeId
+                                    case fitness
+                                        set icon class value "picon picon-fitness picon-goalsummary"
+                                    case nutrition
+                                        set icon class value "picon picon-nutrition picon-goalsummary"
+                                    case wellness
+                                        set icon class value "picon picon-wellness picon-goalsummary"
+                                    default
+                                        set icon class value "picon picon-goals"
+                                if item.DateIntervalId = 'week'
+                                    set duration = xxx 'weeks'
+                                else 
+                                    set duration = xxx 'days'
+                                if item.ActivityMeasureName == null
+                                    set item.ActivityMeasureName = 'Entries'
+                activate the controller
         view.html
-            Activity Goals
-            Biometric Goals
-            Past Activity Goals
-            Past Biometric Goals
+            Activity Goals panel
+                items ordered by StartDate
+                StartDate, EndDate
+                Duration
+                GoalAmt, ActivityMeasureName
+            Biometric Goals panel
+                items ordered by StartDate
+                StartDate, EndDate
+                Duration
+                BiometricName: GoalAmt, BiometricMeasureName
+            Past Activity Goals panel
+                items ordered by StartDate
+                StartDate, EndDate
+                Duration
+                GoalAmt, ActivityMeasureName
+            Past Biometric Goals panel
+                items ordered by StartDate
+                StartDate, EndDate
+                Duration
+                BiometricName: GoalAmt, BiometricMeasureName
 
 HELP
     controllers.help.js
