@@ -1148,7 +1148,108 @@ GOALS
 
     NEWBIOMETRIC (Goals tab, Create button, Biometric subbutton)
         controllers.goals.newbiometric.js
+            set any default values needed for the view
+            computed values
+            event handlers
+                goalDateRange
+                    validates the date entered against the allowable daterange (goalmaxage, goalmaxfuture)
+                    inputdate is between mindate/maxdate (inclusive)
+                evaluateDurationRange (when duration changed)
+                    if date-interval-day is checked, validate duration as between 1 and 365
+                    else, validate duration as between 1 and 52
+                updateMeasureParams (when measures selection is changed)
+                    if event.measures is truthy
+                        find the selected biometricId and biometricMeasureId in healthcategories
+                            and set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
+                        call evaluateMeasureParams to validate
+                evaluateMeasureParams
+                    if no range defined
+                        return that customrange is valid (true) for both current amount and goal amount
+                    else
+                        if current amount has changed and is not null
+                            if current amount is within minrange and maxrange (inclusive)
+                                set current amount customrange validity = true
+                            else
+                                set current amount customrange validity = false
+                            if current amount has digits after the decimal point
+                                if digits after the decimal is greater than allowed
+                                    set current amount customdigits validity = true
+                                else
+                                    set current amount customdigits validity = false
+                            else
+                                set current amount customdigits validity = true
+                        if goal amount has changed and is not null
+                            if goal amount is within minrange and maxrange (inclusive)
+                                set goal amount customrange validity = true
+                            else
+                                set goal amount customrange validity = false
+                            if goal amount has digits after the decimal point
+                                if digits after the decimal is greater than allowed
+                                    set goal amount customdigits validity = true
+                                else
+                                    set goal amount customdigits validity = false
+                            else
+                                set goal amount customdigits validity = true
+                updateIntervalType
+                    set $scope values for [...] based on selected interval type (day, week)
+                        dateintervalid
+                        intervaltype
+                        intervaltypeplural
+                    evaluateDurationRange()
+                    updateMeasureParams()
+                doSubmit
+                    if form is valid
+                        create the request model
+                            GoalMeasureId: 2 (hard coded)
+                            BiometricMeasureId: (from selected measure)
+                            BiometricOptionId: 1 (hard coded)
+                            AggregateFunctionId: 2 (hard coded)
+                            BiometricGoalName: get from form
+                            StartDate: get from form
+                            CurrentAmt: get from form
+                            GoalAmt: get from form
+                            DateIntervalID: get from $scope variable
+                            DateIntervalCount: get from form (duration)
+                            Notes: get from form
+                            BiometridIds: (from selected measure)
+                            BiometricTypeIds: [1] (hard coded)
+                            AllBiometrics: false (hard coded)
+                        send a POST request with the request model to the api (insertBiometricGoal)
+                        on success, if object returned
+                            route to GoalsDetailBiometric with the BiometricGoalId
+                validateGoal
+                    -- CONTINUE HERE --
+            other methods
+            activate()
+                make async calls (get promises)
+                    setLocalAppSettings
+                        if app.appsettings is truthy
+                            $scope.entrymaxage = app.appsettings.entrymaxagebio
+                            $scope.goalmaxfuture = app.appsettings.goalmaxfuturebio
+                            initialize datepicker object values
+                                startdate = $scope.goalmaxage
+                                enddate = $scope.goalmaxfuture
+                    getHealthCategories
+                        if app.profile is truthy
+                            create a request model
+                            make a GET request with the request model to the api (getHealthCategories)
+                            if an object gets returned
+                                add a "comkey" value to each object item
+                                    comkey = item.BiometricID + '|' + item.BiometricMeasureId (not sure we will use this pattern in new tracker)
+                activate the controller
         newbiometric.html
+            Back button (or link)
+            Help link
+            Create biometric panel
+                Goal name
+                Interval selector (day, week)
+                Start date
+                Duration
+                Biometric measure
+                Current amount
+                Goal amount
+                Notes (optional)
+            Save button
 
     NEWFITNESS (Goals tab, Create button, Fitness/Nutrition/Wellness subbutton)
         controllers.goals.newfitness.js
