@@ -579,7 +579,7 @@ ENTRIES
             show points and calories (if applicable) when entering amount values
             submit button disabled until form validation passes
 
-    STATS
+    STATS (This controller and view are not used)
         controllers.entries.stats.js
         stats.html
     
@@ -1620,4 +1620,95 @@ TEAMS
 
     VIEW (Teams tab, View button)
         controllers.teams.view.js
+            set any default values needed for the view
+                Pagination settings, etc.
+            computed values
+                displayEnrollCategory(key, competition.EnrollmentId)
+                    returns true if key and competition.EnrollmentId are of the same type (e.g., 'ind', enrollmentType.Individual)
+                displayAccessLevel(key, competition.AccessLevelId)
+                    returns true if key and competition.AccessLevelId are of the same type (e.g., 'pri', accessLevel.Private)
+                displayFitnessType
+                    create a list of all activityTypeIds for the competition (activityTypeList)
+                    returns true if the key's corresponding ActivityTypeId exists in the activityTypeList
+                displayBiometricType
+                    create a list of a biometricTypeIds for the competition (biometricTypeList)
+                    returns true if the key's corresponding BiometricTypeId exists in the biometricTypeList
+            event handlers
+                gotoTeamDetail
+                    sets teamType to 'standard' or 'family'
+                    sets memberType to 'captain' or 'member'
+                    sets context to teamType + '-' + memberType
+                    switch on context
+                        case familyTeamType + captainMemberType
+                            route to TeamsDetailFamilyCaptain (with TeamId)
+                        case familyTeamType + memberMemberType
+                            route to TeamsDetailFamilyMember (with TeamId)
+                        case standardTeamType + captainMemberType
+                            route to TeamsDetailStandardCaptain (with TeamId)
+                        case standardTeamType + memberMemberType
+                            route to TeamsDetailStandardMember (with TeamId)
+                gotoInvitation
+                    route to TeamsDetailStandardInvite (with TeamId)
+                gotoCompetitions
+                    route to CompetitionsGrid with route params
+                        enrollment category = team
+                        status = all
+                        itemsperpage = 20
+                        access level = public
+                        competitioncontext = open
+                gotoCompetitionDetail
+                    route to CompetitionDetail (with competitionId)
+                getMyTeams
+                    if app.profile is truthy
+                        create a request model
+                        send a GET request with the request model to the api (getMyTeams)
+                        on success, create a list of my team ids (myTeamsList)
+                        if vm.teamsinfo[i].TeamId exists in myTeamsList
+                            push vm.teamsinfo[i] onto vm.myTeams
+                        set pagination numberOfPages
+                getInvitations
+                    if app.profile is truthy
+                        create a request model
+                        send a GET request with the request model to the api (getTeamInvitations)
+                        on success, set vm.invitations to the response object
+            other methods
+            activate()
+                make async calls (get promises)
+                    getTeamsInfo
+                        if app.profile is truthy
+                            create a request model
+                            send a GET with the request model to the api (getMyTeamsDetails)
+                            on success, set vm.teamsinfo to the response object
+                            getMyTeams()
+                            getInvitations()
+                    getTeamCompetitions
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamCompetitions)
+                            on success, set vm.teamcompetitions to the response object
+                activate the controller
         view.html
+            My Teams panel
+                Title + number of teams
+                "No items" panel (show if no items)
+                Shown as table with pagination
+                On click, go to team detail view
+                Team name
+                Captain (first, last, displayname)
+                Member count
+                Show pagination panel if pages > 1
+            Invitations panel (show if invitations > 0)
+                Shown as table
+                On click, go to invitation page
+                Team name
+                Captain (first, last, displayname)
+                Member count
+            Available Team Competitions panel
+                Panel title (clickable, go to competitions)
+                Panel body (show if any new public team competitions available)
+                    order by StartDate, limit to 4
+                    Competitions show as table
+                        StartDate - EndDate
+                        Show a corresponding icon based on enrollment category, access level, fitness type, or biometric type
+                Panel footer
+                    View All Available Team Competitions (clickable)
