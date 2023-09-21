@@ -1575,6 +1575,7 @@ SETTINGS
         profile.html
 TEAMS
     controllers.teams.js
+        contains data for Teams tab buttons (View, Create, About)
 
     ABOUT (Teams tab, About button)
         controllers.teams.about.js
@@ -1616,7 +1617,36 @@ TEAMS
 
     NEWFORM (Teams tab, Create button)
         controllers.teams.newform.js
+            set default values needed for the view
+            computed values
+            event handlers
+                checkMaxLength
+                    IE workaround on textarea maxlength (will we continue to support this for IE?)
+                doSubmit
+                    if form is valid
+                        create a request model
+                        send a POST request with the request model to the api (insertTeam)
+                        on success, returns the resulting teamId
+                        if teamType = standard
+                            route to TeamsInviteMembers with teamId
+                        else if teamType = family
+                            route to TeamsAddFamilyMembers with teamId
+            other methods
+            activate()
+                make async calls (get promises)
+                    getTeamTypes
+                        if app.api is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamTypes)
+                            on success, set vm.options = result items
+                activate the controller
         newform.html
+            Show help link
+            Panel to create new team
+                Team name (required, minlength = 3, maxlength = 100)
+                Team type (required)
+                Team description (optional)
+            Save button (disabled until form is valid)
 
     VIEW (Teams tab, View button)
         controllers.teams.view.js
