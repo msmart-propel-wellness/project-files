@@ -67,36 +67,50 @@ ENTRIES
         controllers.entries.about.js
             see PropelHTML5\App\core\locale\en-US\about.js
             see PropelHTML5\App\core\locale\en-US\basedata.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any defaults needed for the view
+                other methods
+                    activate
+                        activate the controller via the common module with controllerId
+                activate()
         about.html
             static page that binds to a variable containing HTML markup and gives helpful information
 
     DETAILBIOMETRIC (Entries tab, View Biometric button, (in grid view) click the Biometric name)
         controllers.entries.detailbiometric.js
-            set any default values needed for the view
-            computed values
-                isDelegate
-                    determines if user is a delegate (coach) based on the user's UID (in the route params)
-            event handlers
-                clickEdit
-                    updates the window location url to the EDITBIOMETRIC route
-                clickDelete
-                    hides the Delete modal
-                    doDeleteEntry()
-                getEntryDetailBiometric
-                    checks for truthiness of app.profile and routeParams
-                    get memberId from app.profile or delegateUid
-                    construct the request model
-                    make a GET call to getEntryDetailBbiometric url
-                    on successful response, assign display values from the data object
-                    set values to show calories, points, etc.
-                doDeleteEntry
-                    checks for truthiness of app.profile
-                    get memberId from app.profile or delegateUid
-                    construct the request model
-                    make a DELETE call
-            activate()
-                make async calls (gets promises)
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                    isDelegate
+                        determines if user is a delegate (coach) based on the user's UID (in the route params)
+                event handlers
+                    clickEdit
+                        updates the window location url to the EDITBIOMETRIC route
+                    clickDelete
+                        hides the Delete modal
+                        doDeleteEntry()
+                    doDeleteEntry
+                        checks for truthiness of app.profile
+                        get memberId from app.profile or delegateUid
+                        construct the request model
+                        make a DELETE call
+                other methods
                     getEntryDetailBiometric
+                        checks for truthiness of app.profile and routeParams
+                        get memberId from app.profile or delegateUid
+                        construct the request model
+                        make a GET call to getEntryDetailBbiometric url
+                        on successful response, assign display values from the data object
+                        set values to show calories, points, etc.
+                    activate
+                        make async calls to get promises
+                            getEntryDetailBiometric()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         detailbiometric.html
             Biometric Entry panel
                 Date
@@ -113,31 +127,37 @@ ENTRIES
 
     DETAILFITNESS (Entries tab, View Activity button, click the Activity name ('5k Run'))
         controllers.entries.detailfitness.js
-            set any default values needed for the view
-            computed values
-                isDelegate
-                    determines if user is a delegate (coach) based on the user's UID (in the route params)
-            event handlers
-                clickEdit
-                    updates the window location url to the EDITFITNESS route
-                clickDelete
-                    hides the Delete modal
-                    doDeleteEntry()
-                getEntryDetailFitness
-                    checks for truthiness of app.profile and routeParams
-                    get memberId from app.profile or delegateUid
-                    construct the request model
-                    make a GET call to getEntryDetailFitness url
-                    on successful response, assign display values from the data object
-                    set values to show calories, points, etc.
-                doDeleteEntry
-                    checks for truthiness of app.profile
-                    get memberId from app.profile or delegateUid
-                    construct the request model
-                    make a DELETE call
-            activate()
-                make async calls (gets promises)
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                    isDelegate
+                        determines if user is a delegate (coach) based on the user's UID (in the route params)
+                event handlers
+                    clickEdit
+                        updates the window location url to the EDITFITNESS route
+                    clickDelete
+                        hides the Delete modal
+                        doDeleteEntry()
                     getEntryDetailFitness
+                        checks for truthiness of app.profile and routeParams
+                        get memberId from app.profile or delegateUid
+                        construct the request model
+                        make a GET call to getEntryDetailFitness url
+                        on successful response, assign display values from the data object
+                        set values to show calories, points, etc.
+                    doDeleteEntry
+                        checks for truthiness of app.profile
+                        get memberId from app.profile or delegateUid
+                        construct the request model
+                        make a DELETE call
+                other methods
+                    activate
+                        make async calls to get promises
+                            getEntryDetailFitness()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         detailfitness.html
             Activity Entry panel
                 Date
@@ -157,66 +177,73 @@ ENTRIES
 
     EDITBIOMETRIC (Entries tab, View Biometric button, DetailBiometric view, Edit button)
         controllers.entries.editbiometric.js
-            set any default values needed for the view
-            formats dates with Moment.js (deprecated; recommended to use Day.js or Luxon)
-            computed values
-                entryDateRange
-                    validates the date entered against the allowable daterange
-                    inputdate is between mindate/maxdate (inclusive)
-                isDelegateSelected
-                    are we keeping this?
-            event handlers
-                checkMaxLength
-                    IE workaround on textarea maxlength (will we continue to support this for IE?)
-                onActivitySelect
-                    if a biometric is selected
-                        set some additional form values based on the selected activity
-                        evaluateMeasureParams()
-                evaluateMeasureParams
-                    valid = true if no range defined
-                    validate the amount against the allowed range of values
-                    validate the number of digits after the decimal in the amount
-                doSubmit
-                    if form is valid,
-                        create the request model from the form values
-                        submit model to the api
-                        on success, return to the calling url
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                formats dates with Moment.js (deprecated; recommended to use Day.js or Luxon)
+                computed values
+                    entryDateRange
+                        validates the date entered against the allowable daterange
+                        inputdate is between mindate/maxdate (inclusive)
+                    isDelegateSelected
+                        are we keeping this?
+                event handlers
+                    checkMaxLength
+                        IE workaround on textarea maxlength (will we continue to support this for IE?)
+                    onActivitySelect
+                        if a biometric is selected
+                            set some additional form values based on the selected activity
+                            evaluateMeasureParams()
+                    evaluateMeasureParams
+                        valid = true if no range defined
+                        validate the amount against the allowed range of values
+                        validate the number of digits after the decimal in the amount
+                    doSubmit
+                        if form is valid,
+                            create the request model from the form values
+                            submit model to the api
+                            on success, return to the calling url
+                other methods
+                    getHealthCategories
+                        if app.profile is truthy
+                            create a request model
+                            make a GET request to the api
+                            if an object gets returned
+                                create two lists of biometrics (public, private)
+                                assign vm.allhealthcategories to return object
+                                modify the biometric names to say 'disabled' if CanUserCreateReference == false
+                                    and Enabled == false
+                                separate the biometrics into public and private
+                                ** not sure what else is happening here
+                                    build the privatecategory list
+                    setLocalAppSettings
+                        the app settings should either be only loaded once at the initial load of the tracker (possibly injected in the HTML - the current tracker does this) OR should be cached.
+                        sets the min/max for entry datepicker
+                        new endpoint for getting app settings when not authenticated: /configuration/default
+                        new endpoint for getting app settings when authenticated: /configuration/user
+                    getDelegateMembers
+                        not keeping?
+                    getEditDetail
+                        if app.profile and activityid are truthy
+                            create the request model
+                            make a GET request to the api with the request model
+                            on success, setEditDetail()
+                            else return to calling url
+                    getPrivateHealthCategories
+                        if app.profile is truthy
+                            create a request model
+                            send the model with a GET request to api
+                            save result as array of privateHealthCategories
+                            getHealthCategories()
+                    activate
+                        make async calls to get promises
+                            setLocalAppSettings()
+                            getDelegateMembers()
+                            getEditDetail()
+                            getPrivateHealthCategories()
+                        activate the controller via the common module withpromises and controllerId
                 activate()
-                    make async calls (get promises)
-                        setLocalAppSettings
-                            the app settings should either be only loaded once at the initial load of the tracker (possibly injected in the HTML - the current tracker does this) OR should be cached.
-                            sets the min/max for entry datepicker
-                            new endpoint for getting app settings when not authenticated: /configuration/default
-                            new endpoint for getting app settings when authenticated: /configuration/user
-                        getDelegateMembers
-                            not keeping?
-                        getEditDetail
-                            if app.profile and activityid are truthy
-                                create the request model
-                                make a GET request to the api with the request model
-                                on success, setEditDetail()
-                                else return to calling url
-                        getPrivateHealthCategories
-                            if app.profile is truthy
-                                create a request model
-                                send the model with a GET request to api
-                                save result as array of privateHealthCategories
-                                getHealthCategories()
-                    activate the controller
-            methods
-                getHealthCategories
-                    if app.profile is truthy
-                        create a request model
-                        make a GET request to the api
-                        if an object gets returned
-                            create two lists of biometrics (public, private)
-                            assign vm.allhealthcategories to return object
-                            modify the biometric names to say 'disabled' if CanUserCreateReference == false
-                                and Enabled == false
-                            separate the biometrics into public and private
-                            ** not sure what else is happening here
-                                build the privatecategory list
-
         editbiometric.html
             link to show help text in entry form
             selector buttons for four types of entries (fitness activity, nutrition activity, wellness, activity, biometric entry)
@@ -231,50 +258,50 @@ ENTRIES
 
     EDITFITNESS (Entries tab, View Activity button, DetailFitness view, Edit button)
         controllers.entries.editfitness.js
-            set any default values needed for the view
-            formats dates with Moment.js library (deprecated; recommended to use Day.js or Luxon)
-            computed values
-                entryDateRange
-                    validates the date entered against the allowable daterange
-                    inputdate is between mindate/maxdate (inclusive)
-                isValidActivity
-                    validates activity as required field
-                isDelegateSelected
-                    are we keeping this??
-            event handlers
-                checkMaxLength
-                    IE workaround on textarea maxlength (will we continue to support this for IE?)
-                onActivitySelect
-                    if an activity is selected
-                        show the Share as Favorite button
-                        set some additional form values based on the selected activity
-                        evaluateMeasureParams()
-                        $rootScope.prepSharedFavorites() ??
-                    else
-                        hide Share as Favorite button
-                        reset activity measure name label to default
-                evaluateMeasureParams
-                    validate the amount as true if no range defined
-                    validate the amount against the allowed range of values
-                    validate the number of digits (2) after the decimal in the amount
-                    update the calculator values for points, calories burned, calories consumed
-                doSubmit
-                    create the request model from the form values
-                    POST the request model to the api
-                    on success, return back to the calling URL
-            methods
-                setEditDetail
-                    set default values for the selected activity
-                    validate activity as required
-                    call 'whichActivitySelected' (which simply calls evaluateMeasureParams)
-                    set startDate and validate as required
-                    set amount and validate as required
-                    call 'onActivitySelect'
-                    set notes
-                    if delegate is being used, disable notes
-                    getMostRecentWeight()
-            activate()
-                makes async calls (gets promises)
+            register the new controller and its dependencies on the app
+            define the controller function
+                set any default values needed for the view
+                formats dates with Moment.js library (deprecated; recommended to use Day.js or Luxon)
+                computed values
+                    entryDateRange
+                        validates the date entered against the allowable daterange
+                        inputdate is between mindate/maxdate (inclusive)
+                    isValidActivity
+                        validates activity as required field
+                    isDelegateSelected
+                        are we keeping this??
+                event handlers
+                    checkMaxLength
+                        IE workaround on textarea maxlength (will we continue to support this for IE?)
+                    onActivitySelect
+                        if an activity is selected
+                            show the Share as Favorite button
+                            set some additional form values based on the selected activity
+                            evaluateMeasureParams()
+                            $rootScope.prepSharedFavorites() ??
+                        else
+                            hide Share as Favorite button
+                            reset activity measure name label to default
+                    evaluateMeasureParams
+                        validate the amount as true if no range defined
+                        validate the amount against the allowed range of values
+                        validate the number of digits (2) after the decimal in the amount
+                        update the calculator values for points, calories burned, calories consumed
+                    doSubmit
+                        create the request model from the form values
+                        POST the request model to the api
+                        on success, return back to the calling URL
+                other methods
+                    setEditDetail
+                        set default values for the selected activity
+                        validate activity as required
+                        call 'whichActivitySelected' (which simply calls evaluateMeasureParams)
+                        set startDate and validate as required
+                        set amount and validate as required
+                        call 'onActivitySelect'
+                        set notes
+                        if delegate is being used, disable notes
+                        getMostRecentWeight()
                     setLocalAppSettings
                         the app settings should either be only loaded once at the initial load of the tracker (possibly injected in the HTML - the current tracker does this) OR should be cached.
                         sets the min/max for entry datepicker
@@ -305,8 +332,15 @@ ENTRIES
                                 filter by activityTypeId, access level (public/private)
                                 when creating an activity, filter by CanUserCreateReference and Enabled
                                 when editing an activity, follow same rule as for 'create' but also keep the current activity selected, even if it disabled
-                activate the controller with the promises
-                highlight the selected activity type button
+                    activate
+                        makes async calls to get promises
+                            setLocalAppSettings()
+                            getMostRecentWeight()
+                            getEditDetail()
+                            getPrivateActivities()
+                            getDelegateMembers()
+                        activate the controller with the promises and controllerId
+                activate()
         editfitness.html
             link to show back button
             link to show help text in entry form
@@ -325,27 +359,29 @@ ENTRIES
 
     GRIDBIOMETRIC (Entries tab, View Biometric button, (in Latest Biometrics) grid button or View All Biometric Entries)
         controllers.entries.gridbiometric.js
-            set any default values needed for the view
-            computed values
-                pageClass - updates class for active page
-                isDelegateSelected - are we keeping this?
-                isActivitySelected
-            event handlers
-                changeSelectPage - handles pagination
-                gotoUrl
-                    click handler for viewing details; handles delegates in the url
-                updateFilter
-                prepDeleteEntry
-                    prepare items (message) for deleting an entry; show the delete modal
-                deleteEntry
-                    if app.profile is truthy
-                        create the request model
-                        send a DELETE request with the request model to the api
-                        if success
-                            reset some values
-                            getBiometricEntries()
-            activate()
-                make async calls to get promises
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                    pageClass - updates class for active page
+                    isDelegateSelected - are we keeping this?
+                    isActivitySelected
+                event handlers
+                    changeSelectPage - handles pagination
+                    gotoUrl
+                        click handler for viewing details; handles delegates in the url
+                    updateFilter
+                    prepDeleteEntry
+                        prepare items (message) for deleting an entry; show the delete modal
+                    deleteEntry
+                        if app.profile is truthy
+                            create the request model
+                            send a DELETE request with the request model to the api
+                            if success
+                                reset some values
+                                getBiometricEntries()
+                other methods
                     getDelegateMembers - are we keeping this?
                     getHealthCategories
                         if app.profile is truthy
@@ -369,7 +405,13 @@ ENTRIES
                                 set the canModify value for each entry
                                     see PropelHTML5\App\core\helpers\permissions.js
                                 set any pagination values needed for correct viewing
-                activate the controller
+                    activate
+                        make async calls to get promises
+                            getDelegateMembers()
+                            getHealthCategories()
+                            getBiometricEntries()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         gridbiometric.html
             Back button
             Filter row
@@ -385,31 +427,33 @@ ENTRIES
 
     GRIDFITNESS (Entries tab, View Activity button, (in Recent Activity)grid button or View All Activity Entries)
         controllers.entries.gridfitness.js
-            set any default values needed for the view
-            computed values
-                pageClass - updates class for active page
-                isDelegateSelected - are we keeping this?
-                isSubtypeSelected - syncs the selected subtype (all, fitness, nutrition, wellness) from the url
-                isActivitySelected - syncs the selected activity type from the url
-            event handlers
-                changeSelectPage - handles pagination
-                gotoUrl
-                    click handler for viewing details; handles delegates in the url
-                updateSubtype
-                    click handler; refreshes fitness activities to sync
-                updateFilter
-                    click handler for filter; refreshes fitness entries
-                prepDeleteEntry
-                    prepare items (message) for deleting an entry; show the delete modal
-                deleteEntry
-                    if app.profile is truthy
-                        create the request model
-                        send a DELETE request with the request model to the api
-                        if success
-                            reset some values
-                            getFitnessEntries()
-            activate()
-                make async calls to get promises
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                    pageClass - updates class for active page
+                    isDelegateSelected - are we keeping this?
+                    isSubtypeSelected - syncs the selected subtype (all, fitness, nutrition, wellness) from the url
+                    isActivitySelected - syncs the selected activity type from the url
+                event handlers
+                    changeSelectPage - handles pagination
+                    gotoUrl
+                        click handler for viewing details; handles delegates in the url
+                    updateSubtype
+                        click handler; refreshes fitness activities to sync
+                    updateFilter
+                        click handler for filter; refreshes fitness entries
+                    prepDeleteEntry
+                        prepare items (message) for deleting an entry; show the delete modal
+                    deleteEntry
+                        if app.profile is truthy
+                            create the request model
+                            send a DELETE request with the request model to the api
+                            if success
+                                reset some values
+                                getFitnessEntries()
+                other methods
                     getDelegateMembers - are we keeping this?
                     getFitnessActivities
                         if app.profile is truthy
@@ -437,7 +481,13 @@ ENTRIES
                                     see PropelHTML5\App\core\helpers\permissions.js
                                 calculate the activity points and calories
                                 set any pagination values needed for correct viewing
-                activate the controller
+                    activate
+                        make async calls to get promises
+                            getDelegateMembers()
+                            getFitnessActivities()
+                            getFitnessEntries()
+                        activate the controller via the common module withpromises and controllerId
+                activate()
         gridfitness.html
             Back button
             Filter row
@@ -454,56 +504,63 @@ ENTRIES
 
     NEWBIOMETRIC (Entries tab, Create button, Biometric sub-button)
         controllers.entries.newbiometric.js
-            set any default values needed for the view
-            formats dates with Moment.js (deprecated; recommended to use Day.js or Luxon)
-            computed values
-                entryDateRange
-                    validates the date entered against the allowable daterange
-            event handlers
-                checkMaxLength
-                    IE workaround on textarea maxlength (will we continue to support this for IE?)
-                goToForm
-                    route to the selected entry form component
-                onActivitySelect
-                    set some additional form values based on the selected activity
-                    evaluateMeasureParams()
-                evaluateMeasureParams
-                    valid = true if no range defined
-                    validate the amount against the allowed range of values
-                    validate the number of digits after the decimal in the amount
-                doSubmit
-                    create the request model from the form values
-                    submit model to the api
-                    on success
-                        reset form values
-                        show alert for sucess or failure
-                resetForm
-                    needed only in a 'delegate' situation?
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                formats dates with Moment.js (deprecated; recommended to use Day.js or Luxon)
+                computed values
+                    entryDateRange
+                        validates the date entered against the allowable daterange
+                event handlers
+                    checkMaxLength
+                        IE workaround on textarea maxlength (will we continue to support this for IE?)
+                    goToForm
+                        route to the selected entry form component
+                    onActivitySelect
+                        set some additional form values based on the selected activity
+                        evaluateMeasureParams()
+                    evaluateMeasureParams
+                        valid = true if no range defined
+                        validate the amount against the allowed range of values
+                        validate the number of digits after the decimal in the amount
+                    doSubmit
+                        create the request model from the form values
+                        submit model to the api
+                        on success
+                            reset form values
+                            show alert for sucess or failure
+                    resetForm
+                        needed only in a 'delegate' situation?
+                other methods
+                    getHealthCategories
+                        if app.profile is truthy
+                            create a request model
+                            make a GET request to the api
+                            if an object gets returned
+                                create two lists of biometrics (public, private)
+                                assign vm.healthcategories to public list
+                                ** not sure what else is happening here
+                    setLocalAppSettings
+                        the app settings should either be only loaded once at the initial load of the tracker (possibly injected in the HTML - the current tracker does this) OR should be cached.
+                        sets the min/max for entry datepicker
+                        new endpoint for getting app settings when not authenticated: /configuration/default
+                        new endpoint for getting app settings when authenticated: /configuration/user
+                    getDelegateMembers
+                        are we still doing this?
+                    getPrivateHealthCategories
+                        if app.profile is truthy
+                            create a request model
+                            send the model with a GET request to api
+                            save result as array of privateHealthCategories
+                            getHealthCategories()
+                    activate
+                        make async calls to get promises
+                            setLocalAppSettings()
+                            getDelegateMembers()
+                            getPrivateHealthCategories()
+                        activate the controller via the common module with promises and controllerId
                 activate()
-                    make async calls (get promises)
-                        setLocalAppSettings
-                            the app settings should either be only loaded once at the initial load of the tracker (possibly injected in the HTML - the current tracker does this) OR should be cached.
-                            sets the min/max for entry datepicker
-                            new endpoint for getting app settings when not authenticated: /configuration/default
-                            new endpoint for getting app settings when authenticated: /configuration/user
-                        getDelegateMembers
-                            are we still doing this?
-                        getPrivateHealthCategories
-                            if app.profile is truthy
-                                create a request model
-                                send the model with a GET request to api
-                                save result as array of privateHealthCategories
-                                getHealthCategories()
-                    activate the controller
-            methods
-                getHealthCategories
-                    if app.profile is truthy
-                        create a request model
-                        make a GET request to the api
-                        if an object gets returned
-                            create two lists of biometrics (public, private)
-                            assign vm.healthcategories to public list
-                            ** not sure what else is happening here
         newbiometric.html
             link to show help text in entry form
             selector buttons for four types of entries (fitness activity, nutrition activity, wellness, activity, biometric entry)
@@ -518,37 +575,39 @@ ENTRIES
 
     NEWFITNESS (Entries tab, Create button, Fitness/Nutrition/Wellness sub-button)
         controllers.entries.newfitness.js (Fitness [id:1], Nutrition [id:2], Wellness[id:3])
-            set any default values needed for the view
-            formats dates with Moment.js library (deprecated; recommended to use Day.js or Luxon)
-            computed values
-                entryDateRange
-                    validates the date entered against the allowable daterange
-                isValidActivity
-                    validates activity as required field
-            event handlers
-                checkMaxLength
-                    IE workaround on textarea maxlength (will we continue to support this for IE?)
-                goToForm
-                    route to the selected entry form component
-                onActivitySelect
-                    show the Share as Favorite button
-                    set some additional form values based on the selected activity
-                    evaluateMeasureParams()
-                evaluateMeasureParams
-                    validate the amount as true if no range defined
-                    validate the amount against the allowed range of values
-                    validate the number of digits after the decimal in the amount
-                    update the calculator values for points, calories burned, calories consumed
-                doSubmit
-                    create the request model from the form values
-                    submit model to the api
-                    on success
-                        reset form values
-                        show alert for sucess or failure
-                resetForm
-                    needed only in a 'delegate' situation?
-            activate()
-                makes async calls (gets promises)
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                formats dates with Moment.js library (deprecated; recommended to use Day.js or Luxon)
+                computed values
+                    entryDateRange
+                        validates the date entered against the allowable daterange
+                    isValidActivity
+                        validates activity as required field
+                event handlers
+                    checkMaxLength
+                        IE workaround on textarea maxlength (will we continue to support this for IE?)
+                    goToForm
+                        route to the selected entry form component
+                    onActivitySelect
+                        show the Share as Favorite button
+                        set some additional form values based on the selected activity
+                        evaluateMeasureParams()
+                    evaluateMeasureParams
+                        validate the amount as true if no range defined
+                        validate the amount against the allowed range of values
+                        validate the number of digits after the decimal in the amount
+                        update the calculator values for points, calories burned, calories consumed
+                    doSubmit
+                        create the request model from the form values
+                        submit model to the api
+                        on success
+                            reset form values
+                            show alert for sucess or failure
+                    resetForm
+                        needed only in a 'delegate' situation?
+                other methods
                     setLocalAppSettings
                         the app settings should either be only loaded once at the initial load of the tracker (possibly injected in the HTML - the current tracker does this) OR should be cached.
                         sets the min/max for entry datepicker
@@ -570,8 +629,15 @@ ENTRIES
                                 filter by activityTypeId, access level (public/private)
                                 when creating an activity, filter by CanUserCreateReference and Enabled
                                 when editing an activity, follow same rule as for 'create' but also keep the current activity selected, even if it disabled
-                activate the controller with the promises
-                highlight the selected activity type button
+                    activate
+                        makes async calls to get promises
+                            setLocalAppSettings()
+                            getMostRecentWeight()
+                            getDelegateMembers()
+                            getPrivateActivities()
+                        activate the controller via the common module with the promises and controllerId
+                        highlight the selected activity type button
+                activate()
         newfitness.html
             link to show help text in entry form
             selector buttons for four types of entries (fitness activity, nutrition activity, wellness, activity, biometric entry)
@@ -593,36 +659,38 @@ ENTRIES
     
     VIEWBIOMETRIC (Entries tab, View Biometric button)
         controllers.entries.viewbiometric.js
-            set any default values needed for the view
-            event handlers
-                gotoUrl
-                    click handler for viewing details; handles delegates in the url
-                    navigates to DetailBiometric or NewBiometric
-                drillDown
-                    click handler that navigates to GridBiometric
-                deleteRecord
-                    calls deleteEntry
-                viewAll
-                    navigates to GridBiometric with activityId set to -1
-                populateMostRecentEntries
-                    if app.profile is truthy and entries list contains at least 1 entry
-                        create a new request model
-                        send a GET request with the model to the api (getMostRecentByHealthCategory)
-                        foreach most recent entry by health category
-                            foreach entry
-                                if the entry (category) biometridId matches the most recent entry BiometricId
-                                    populate these values for entries
-                                        BiometricCheckInId
-                                        BiometricCheckInAmount
-                                        BiometricCheckInDate
-                                        DataProviderInfo (from _$help.DataProviderNameSourceFormatter)
-                deleteEntry
-                    if app.profile is truthy
-                        create a request model
-                        send a DELETE request with the model to the api
-                        call getBiometricEntries
-            activate()
-                make async calls (get promises)
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                event handlers
+                    gotoUrl
+                        click handler for viewing details; handles delegates in the url
+                        navigates to DetailBiometric or NewBiometric
+                    drillDown
+                        click handler that navigates to GridBiometric
+                    deleteRecord
+                        calls deleteEntry
+                    viewAll
+                        navigates to GridBiometric with activityId set to -1
+                    populateMostRecentEntries
+                        if app.profile is truthy and entries list contains at least 1 entry
+                            create a new request model
+                            send a GET request with the model to the api (getMostRecentByHealthCategory)
+                            foreach most recent entry by health category
+                                foreach entry
+                                    if the entry (category) biometridId matches the most recent entry BiometricId
+                                        populate these values for entries
+                                            BiometricCheckInId
+                                            BiometricCheckInAmount
+                                            BiometricCheckInDate
+                                            DataProviderInfo (from _$help.DataProviderNameSourceFormatter)
+                    deleteEntry
+                        if app.profile is truthy
+                            create a request model
+                            send a DELETE request with the model to the api
+                            call getBiometricEntries
+                other methods
                     getBiometricMostRecentEntries (get most recent entry for 10 different biometrics)
                         if app.profile is truthy
                             create a request model
@@ -654,6 +722,12 @@ ENTRIES
                             if data exists in progseries
                                 create a chart initialization object
                                 call singleBiometricEntriesGraph to activate the graph
+                    activate
+                        make async calls to get promises
+                            getBiometricMostRecentEntries()
+                            getChartInfo()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         viewbiometric.html
             Chart panel
                 highlights Weight or possibly the latest checkin?
@@ -662,27 +736,40 @@ ENTRIES
     
     VIEWFITNESS (Entries tab, View Activity button)
         controllers.entries.viewfitness.js
-            set any default values needed for the view
-            event handlers
-                gotoUrl
-                    click handler for viewing details; handles delegates in the url
-                    navigates to DetailFitness
-                drillDown
-                    click handler that navigates to GridFitness
-                deleteRecord
-                    calls deleteEntry
-                getIcon
-                    gets the appropriate icon for the activity subtype
-                viewAll
-                    navigates to GridFitness with activityId set to -1
-                deleteEntry
-                    if app.profile is truthy
-                        create a request model
-                        send a DELETE request with the model to the api (deleteFitnessEntry)
-                        call getFitnessEntries
-            activate()
-                make async calls (get promises)
+            register the new controller and its dependencies on the app
+            define the controller function
+                clear rootscope cache
+                get the log function from common.logger
+                set any default values needed for the view
+                event handlers
+                    gotoUrl
+                        click handler for viewing details; handles delegates in the url
+                        navigates to DetailFitness
+                    drillDown
+                        click handler that navigates to GridFitness
+                    deleteRecord
+                        calls deleteEntry
+                    getIcon
+                        gets the appropriate icon for the activity subtype
+                    viewAll
+                        navigates to GridFitness with activityId set to -1
+                    deleteEntry
+                        if app.profile is truthy
+                            create a request model
+                            send a DELETE request with the model to the api (deleteFitnessEntry)
+                            call getFitnessEntries
+                other methods
                     getFitnessEntries
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getFitnessEntries)
+                            on success
+                                assign response items to vm.entries
+                                append icon data to each entry object
+                                    fitness: ./Images/icons/icon_64_fitness.png
+                                    nutrition: ./Images/icons/icon_64_nutrition.png
+                                    wellness: ./Images/icons/icon_64_wellness.png
+                                append dataProviderInfo (using helper method DataProviderNameSourceFormatter)
                     getChartInfo
                         if app.profile is truthy
                             set relevant date values
@@ -700,6 +787,12 @@ ENTRIES
                                 call activityEntriesByTypeGraph to activate the graph
                         else
                             hide the chart panel
+                    activate
+                        make async calls to get promises
+                            getFitnessEntries()
+                            getChartInfo()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         viewfitness.html
             Chart panel
                 highlights latest checkins for Fitness, Nutrition, and Wellness activities
@@ -714,38 +807,47 @@ GOALS
         controllers.goals.about.js
             see PropelHTML5\App\core\locale\en-US\about.js
             see PropelHTML5\App\core\locale\en-US\basedata.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any defaults needed for the view
+                other methods
+                    activate
+                        activate the controller via the common module with controllerId
+                activate()            
         about.html
 
     DETAILBIOMETRIC (Goals tab, View button, select a biometric goal)
         controllers.goals.detailbiometric.js
-            set any default values needed for the view
-            computed values
-            event handlers
-                gotoEdit
-                    navigates to GoalsEditBiometric
-                deleteGoal
-                    hides the delete goal dialog modal
-                    calls doDeleteGoal
-            methods
-                doDeleteGoal
-                    if app.profile is truthy
-                        create the request model
-                        send a DELETE request with the model to the api (DeleteBiometricGoal)
-                getChartInfo
-                    if app.profile is truthy
-                        create a request model
-                        send a GET request with the model to the api (getHealthGoalEntries)
-                        if returned items exist (are truthy)
-                            create items for the progress series; push to an array
-                            if biometric measure name == null, set label to default
-                            else set to goalInfo.BiometricMeasureName
-                            if goalInfo.DateIntervalId == "day"
-                                set local variable dateinterval to "day", else "weeks"
-                            create a chart initialization object
-                            initialize the chart with the object (biometricGoalDetail)
-                        else hide the chart panel
-            activate()
-                make async calls (get promises)
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                event handlers
+                    gotoEdit
+                        navigates to GoalsEditBiometric
+                    deleteGoal
+                        hides the delete goal dialog modal
+                        calls doDeleteGoal
+                other methods
+                    doDeleteGoal
+                        if app.profile is truthy
+                            create the request model
+                            send a DELETE request with the model to the api (DeleteBiometricGoal)
+                    getChartInfo
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the model to the api (getHealthGoalEntries)
+                            if returned items exist (are truthy)
+                                create items for the progress series; push to an array
+                                if biometric measure name == null, set label to default
+                                else set to goalInfo.BiometricMeasureName
+                                if goalInfo.DateIntervalId == "day"
+                                    set local variable dateinterval to "day", else "weeks"
+                                create a chart initialization object
+                                initialize the chart with the object (biometricGoalDetail)
+                            else hide the chart panel
                     getBiometricGoals
                         if app.profile is truthy
                             create a request model
@@ -754,7 +856,11 @@ GOALS
                             if DateIntervalId == "day", then set label to "days"
                             if DateIntervalId == "week, then set label to "weeks"
                             getChartInfo()
-                activate the controller
+                    activate
+                        make async calls to get promises
+                            getBiometricGoals()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         detailbiometric.html
             Chart panel with goal and progress
             Goal panel with details
@@ -768,47 +874,48 @@ GOALS
 
     DETAILFITNESS (Goals tab, View button, select an activity goal)
         controllers.goals.detailfitness.js
-            set any default values needed for the view
-            computed values
-            event handlers
-                gotoEdit
-                    navigates to GoalsEditFitness
-                deleteGoal
-                    hides the delete goal dialog modal
-                    calls doDeleteGoal
-            methods
-                doDeleteGoal
-                    if app.profile is truthy
-                        create the request model
-                        send a DELETE request with the model to the api (DeleteFitnessGoal)
-                getFitnessActivities(subtype)
-                    if app.profile is truthy
-                        create a request model
-                        send a GET request with the model to the api (getFitnessActivities)
-                        for each item in the response object
-                            get the activityTypeId
-                            if subtype == activityTypeId, the push item onto qualifiedActivities array
-                getChartInfo
-                    if app.profile is truthy
-                        create a request model
-                        if returned items exist
-                            push items to progseries by looping through returned results
-                                activityAmount = 1 if goalInfo.ActivityMeasureName == null; else result[i].ActivityCheckInAmount || 0
-                                entrydate = moment(obj[i].ActivityCheckInDate).utc().valueOf();
-                                item = [ entrydate, activityAmount ]
-                            measurename = basedata.chartlbl if goalinfo.ActivityMeasureName == null
-                            else measurename = goalinfo.ActivityMeasureName
-                            if goalinfo.DataIntervalId == "day".id
-                                datainterval = "day"
-                                dataintervallblb = basedata.chartlbl19
-                            else
-                                datainterval = "week"
-                                dataintervallblb = basedata.chartlbl18
-                            create a chart initialization object
-                            initialize the chart with the object (activityGoalDetail)
-                        else hide the chart panel
-            activate()
-                make async calls (get promises)
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                event handlers
+                    gotoEdit
+                        navigates to GoalsEditFitness
+                    deleteGoal
+                        hides the delete goal dialog modal
+                        calls doDeleteGoal
+                other methods
+                    doDeleteGoal
+                        if app.profile is truthy
+                            create the request model
+                            send a DELETE request with the model to the api (DeleteFitnessGoal)
+                    getFitnessActivities(subtype)
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the model to the api (getFitnessActivities)
+                            for each item in the response object
+                                get the activityTypeId
+                                if subtype == activityTypeId, the push item onto qualifiedActivities array
+                    getChartInfo
+                        if app.profile is truthy
+                            create a request model
+                            if returned items exist
+                                push items to progseries by looping through returned results
+                                    activityAmount = 1 if goalInfo.ActivityMeasureName == null; else result[i].ActivityCheckInAmount || 0
+                                    entrydate = moment(obj[i].ActivityCheckInDate).utc().valueOf();
+                                    item = [ entrydate, activityAmount ]
+                                measurename = basedata.chartlbl if goalinfo.ActivityMeasureName == null
+                                else measurename = goalinfo.ActivityMeasureName
+                                if goalinfo.DataIntervalId == "day".id
+                                    datainterval = "day"
+                                    dataintervallblb = basedata.chartlbl19
+                                else
+                                    datainterval = "week"
+                                    dataintervallblb = basedata.chartlbl18
+                                create a chart initialization object
+                                initialize the chart with the object (activityGoalDetail)
+                            else hide the chart panel
                     getFitnessGoals
                         if app.profile is truthy
                             create a request model
@@ -829,7 +936,11 @@ GOALS
                                     show control for selected activities
                         else
                             redirect to GoalsView
-                activate the controller
+                    activate
+                        make async calls to get promises
+                            getFitnessGoals()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         detailfitness.html
             Chart panel with goal and progress
             Goal panel with details
@@ -843,78 +954,79 @@ GOALS
 
     EDITBIOMETRIC
         controllers.goals.editbiometric.js
-            set any default values needed for the view
-            computed values
-            event handlers
-                checkMaxLength
-                    IE workaround on textarea maxlength (will we continue to support this for IE?)
-                goalDateRange (when StartDate changed)
-                    validates input date to be between min/max, or same as original date
-                evaluateDurationRange (when duration changed)
-                    if date-interval-day is checked, validate duration as between 1 and 365
-                    else, validate duration as between 1 and 52
-                updateMeasureParams (when measures selection is changed)
-                    if event.measures is truthy
-                        find the selected biometricId and biometricMeasureId in healthcategories
-                            and set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
-                        call evaluateMeasureParams to validate
-                updateIntervalType
-                    set $scope values for [...] based on selected interval type (day, week)
-                        dateintervalid
-                        intervaltype
-                        intervaltypeplural
-                    evaluateDurationRange()
-                    updateMeasureParams()
-                whichMeasureSelected
-                    updateMeasureParams()
-                whichDateIntervalChecked
-                    * prevents user from changing date interval type (day, week)
-                    sets checked attribute for 'day' as checked if 'day' radio selected and editinfo.DateIntervalId == day
-                    sets checked attribute for 'week' as checked if 'week' radio selected and editinfo.DateIntervalId == week
-                doSubmit
-                    create a request model
-                        BiometricGoalId: from routeparams or model
-                        GoalMeasureId: (was hard-coded as 2)
-                        BiometricMeasureId: (get from form)
-                        BiometricOpitonId: (was hard-coded as 1)
-                        AggregateFunctionId: (was hard-coded as 2)
-                        BiometricGoalName: get from form
-                        StartDate: get from form
-                        CurrentAmt: get from form
-                        GoalAmt: get from form
-                        DateIntervalId: scope value
-                        DateIntervalCount: get from form
-                        Notes: get from form
-                        BiometricIds: get from form
-                        BiometricTypeIds: (was hard-coded as [1])
-                        AllBiometrics: (was hard-coded as false)
-                    send a POST request with model to the api (updateBiometricGoal)
-                    on success, return to GoalsDetailBiometric view with current goalId
-            other methods
-                evaluateMeasureParams
-                    return as valid if no range is defined
-                    evaluate current amount (range, digits)
-                    evaluate goal amount (range, digits)
-                getBiometricEditDetail
-                    if app.profile is truthy and vm.editinfo is not empty []
-                        set form values (models) and validation states for 
-                            Measures
-                            Goalname
-                            StartDate
-                            Duration
-                            Current amount
-                            Goal amount
-                        update date interval labels (week, day)
-                        updateIntervalType()
-                        set selected activities list
-                validateGoal
-                    if app.profile is truthy
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                event handlers
+                    checkMaxLength
+                        IE workaround on textarea maxlength (will we continue to support this for IE?)
+                    goalDateRange (when StartDate changed)
+                        validates input date to be between min/max, or same as original date
+                    evaluateDurationRange (when duration changed)
+                        if date-interval-day is checked, validate duration as between 1 and 365
+                        else, validate duration as between 1 and 52
+                    updateMeasureParams (when measures selection is changed)
+                        if event.measures is truthy
+                            find the selected biometricId and biometricMeasureId in healthcategories
+                                and set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
+                            call evaluateMeasureParams to validate
+                    updateIntervalType
+                        set $scope values for [...] based on selected interval type (day, week)
+                            dateintervalid
+                            intervaltype
+                            intervaltypeplural
+                        evaluateDurationRange()
+                        updateMeasureParams()
+                    whichMeasureSelected
+                        updateMeasureParams()
+                    whichDateIntervalChecked
+                        * prevents user from changing date interval type (day, week)
+                        sets checked attribute for 'day' as checked if 'day' radio selected and editinfo.DateIntervalId == day
+                        sets checked attribute for 'week' as checked if 'week' radio selected and editinfo.DateIntervalId == week
+                    doSubmit
                         create a request model
-                        send a POST request with the request model to the api (validateHealthGoal)
-                        if no exception returned, set validation as true
-                        else (exception caught) set validation as false
-            activate()
-                make async calls (get promises)
+                            BiometricGoalId: from routeparams or model
+                            GoalMeasureId: (was hard-coded as 2)
+                            BiometricMeasureId: (get from form)
+                            BiometricOpitonId: (was hard-coded as 1)
+                            AggregateFunctionId: (was hard-coded as 2)
+                            BiometricGoalName: get from form
+                            StartDate: get from form
+                            CurrentAmt: get from form
+                            GoalAmt: get from form
+                            DateIntervalId: scope value
+                            DateIntervalCount: get from form
+                            Notes: get from form
+                            BiometricIds: get from form
+                            BiometricTypeIds: (was hard-coded as [1])
+                            AllBiometrics: (was hard-coded as false)
+                        send a POST request with model to the api (updateBiometricGoal)
+                        on success, return to GoalsDetailBiometric view with current goalId
+                other methods
+                    evaluateMeasureParams
+                        return as valid if no range is defined
+                        evaluate current amount (range, digits)
+                        evaluate goal amount (range, digits)
+                    getBiometricEditDetail
+                        if app.profile is truthy and vm.editinfo is not empty []
+                            set form values (models) and validation states for 
+                                Measures
+                                Goalname
+                                StartDate
+                                Duration
+                                Current amount
+                                Goal amount
+                            update date interval labels (week, day)
+                            updateIntervalType()
+                            set selected activities list
+                    validateGoal
+                        if app.profile is truthy
+                            create a request model
+                            send a POST request with the request model to the api (validateHealthGoal)
+                            if no exception returned, set validation as true
+                            else (exception caught) set validation as false
                     setLocalAppSettings
                         if app.appsettings is truthy
                             $scope.goalmaxage = app.appsettings.goalmaxagebio
@@ -942,7 +1054,14 @@ GOALS
                                             item.BiometricName += ' - Disabled'
                                         push onto temp array
                                 assign temp array to vm.healthcategories
-                set a watcher on goalname, startdate, duration to call validateGoal() when all three are not undefined
+                    activate
+                        make async calls to get promises
+                            setLocalAppSettings()
+                            loadBiometricEditDetail()
+                            getHealthCategories()
+                        activate the controller via the common module with promises and controllerId
+                        set a watcher on goalname, startdate, duration to call validateGoal() when all three are not undefined
+                activate()
         editbiometric.html
             Back button
             link to show help text in entry form
@@ -961,127 +1080,128 @@ GOALS
 
     EDITFITNESS
         controllers.goals.editfitness.js
-            set any default values needed for the view
-            computed values
-                anyFitnessActivities(subtype, activitymeasureid)
-                    foreach item in vm.fitactivities
-                        if ((activityMeasureId == Entries || activityMeasureId == item.ActivityMeasureId) 
-                                && (subtype (fitness, nutrition, wellness) == acttype))
-                            return true
-                    return false
-            event handlers
-                checkMaxLength
-                    IE workaround on textarea maxlength (will we continue to support this for IE?)
-                goalDateRange
-                    validates input date to be between min/max, or same as original date
-                evaluateDurationRange
-                    if date-interval-day is checked, validate duration as between 1 and 365
-                    else validate duration as between 1 and 52
-                updateMeasureParams
-                    if event.measures is >= 1
-                        find the selected activityMeasureId in vm.measures
-                            set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
-                        call evaluateMeasureParams to validate
-                        getFitnessActivities(event.measures) // filter activities by measure
-                    else if event.measures == -1000 ("Entries")
-                        set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
-                    else do nothing
-                toggleSelectedActivities
-                    show/hide selected activities div
-                onChangeSelectedActivities -- UNUSED
-                isSelectedActivitiesRequired
-                    return !activityselecttype === 'all' (return true if activityselecttype == userselected, else return false)
-                updateIntervalType
-                    set $scope values for [...] based on selected interval type (day, week)
-                        dateintervalid
-                        intervaltype
-                        intervaltypeplural
-                    evaluateDurationRange()
-                    updateMeasureParams()
-                whatActivitiesSelected
-                    ng-selected handler for marking an activities as selected from vm.editinfo.ActivityIds
-                whichDateIntervalChecked
-                    ng-checked handler for marking the selected dateinterval as checked from vm.editinfo.DateIntervalID
-                whichMeasureSelected -- UNUSED
-                doSubmit
-                    if form is valid
-                        var goalMeasureId, activityMeasureId, activityIds;
-                        var allActivitiesCategories = false;
-                        if selected measure == 'Entries'
-                            goalMeasureId = 1
-                            activityMeasureId = null
-                        else
-                            goalMeasureId = 2
-                            activityMeasureId = Number(selected measure)
-                        if selected activity type = 'all'
-                            activityIds = null
-                            allActivitiesCategories = true
-                        else
-                            activityIds = selectedActivitiesList
-                        create a request model
-                            ActivityGoalName: get from form
-                            StartDate: get from form
-                            ActivityMeasureId: activityMeasureId
-                            Notes: get from form
-                            DateIntervalCount: get from form (duration)
-                            DateIntervalId: get from scope variable
-                            CurrentAmt: get from form
-                            GoalAmt: get from form
-                            ActivityTypeIds: [ get from route params or view model ] (as array)
-                            ActivityIds: activityIds
-                            AllActivities: allActivitiesCategories
-                            AggregateFunctionId: 1 (hard coded)
-                            GoalMeasureId: goalMeasureId
-                            ActivityGoalId: get from route params or view model
-                        send a POST request with the request model to the api (updateFitnessGoal)
-                        on success, route back to GoalDetailFitness with goalId
-                getFitnessActivities(activityMeasureId)
-                    if app.profile is truth and vm.fitactivities contains data (length >= 1)
-                        initialize qualifiedActivities array
-                        get subtype from route params
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                    anyFitnessActivities(subtype, activitymeasureid)
                         foreach item in vm.fitactivities
-                            acttype = item.ActivityTypeId
                             if ((activityMeasureId == Entries || activityMeasureId == item.ActivityMeasureId) 
-                                && (subtype (fitness, nutrition, wellness) == acttype))
-                                    push item to qualified activities array
-                        if the result is no qualified activities, show a negative validation message
-                getFitnessEditDetails
-                    if app.profile is truthy and vm.editinfo is not empty []
-                        set form values (models) and validation states for 
-                            Measures
-                                if vm.editinfo.ActivityMeasureId == null
-                                    Measures = "Entries"
-                                else
-                                    Measures = vm.editinfo.ActivityMeasureId
-                            Goalname
-                            StartDate
-                            Duration
-                            Current amount
-                            Goal amount
-                            Notes
-                        Set selectedActivitiesList to vm.editinfo.ActivityIds
-                        if vm.editinfo.AllActivities == true
-                            activityselecttype = 'all
-                        else
-                            activityselecttype = 'userselected'
-                            toggleSelectedActivities('show')
-                        update date interval labels (week, day)
-                        updateIntervalType()
-                        if activityIds contains data (length >= 1)
-                            show selected activities div
-                validateGoal
-                    if app.profile is truthy
-                        create a request model
-                        send a POST request with the request model to the api (validateFitnessGoal)
-                        if no exception returned, set validation ("unique for time") as true
-                        else (exception caught) set validation as false
-            other methods
-                evaluateMeasureParams
-                    return as valid if no range is defined
-                    evaluate current amount (range, digits)
-                    evaluate goal amount (range, digits)
-            activate()
-                make async calls (get promises)
+                                    && (subtype (fitness, nutrition, wellness) == acttype))
+                                return true
+                        return false
+                event handlers
+                    checkMaxLength
+                        IE workaround on textarea maxlength (will we continue to support this for IE?)
+                    goalDateRange
+                        validates input date to be between min/max, or same as original date
+                    evaluateDurationRange
+                        if date-interval-day is checked, validate duration as between 1 and 365
+                        else validate duration as between 1 and 52
+                    updateMeasureParams
+                        if event.measures is >= 1
+                            find the selected activityMeasureId in vm.measures
+                                set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
+                            call evaluateMeasureParams to validate
+                            getFitnessActivities(event.measures) // filter activities by measure
+                        else if event.measures == -1000 ("Entries")
+                            set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
+                        else do nothing
+                    toggleSelectedActivities
+                        show/hide selected activities div
+                    onChangeSelectedActivities -- UNUSED
+                    isSelectedActivitiesRequired
+                        return !activityselecttype === 'all' (return true if activityselecttype == userselected, else return false)
+                    updateIntervalType
+                        set $scope values for [...] based on selected interval type (day, week)
+                            dateintervalid
+                            intervaltype
+                            intervaltypeplural
+                        evaluateDurationRange()
+                        updateMeasureParams()
+                    whatActivitiesSelected
+                        ng-selected handler for marking an activities as selected from vm.editinfo.ActivityIds
+                    whichDateIntervalChecked
+                        ng-checked handler for marking the selected dateinterval as checked from vm.editinfo.DateIntervalID
+                    whichMeasureSelected -- UNUSED
+                    doSubmit
+                        if form is valid
+                            var goalMeasureId, activityMeasureId, activityIds;
+                            var allActivitiesCategories = false;
+                            if selected measure == 'Entries'
+                                goalMeasureId = 1
+                                activityMeasureId = null
+                            else
+                                goalMeasureId = 2
+                                activityMeasureId = Number(selected measure)
+                            if selected activity type = 'all'
+                                activityIds = null
+                                allActivitiesCategories = true
+                            else
+                                activityIds = selectedActivitiesList
+                            create a request model
+                                ActivityGoalName: get from form
+                                StartDate: get from form
+                                ActivityMeasureId: activityMeasureId
+                                Notes: get from form
+                                DateIntervalCount: get from form (duration)
+                                DateIntervalId: get from scope variable
+                                CurrentAmt: get from form
+                                GoalAmt: get from form
+                                ActivityTypeIds: [ get from route params or view model ] (as array)
+                                ActivityIds: activityIds
+                                AllActivities: allActivitiesCategories
+                                AggregateFunctionId: 1 (hard coded)
+                                GoalMeasureId: goalMeasureId
+                                ActivityGoalId: get from route params or view model
+                            send a POST request with the request model to the api (updateFitnessGoal)
+                            on success, route back to GoalDetailFitness with goalId
+                    getFitnessActivities(activityMeasureId)
+                        if app.profile is truth and vm.fitactivities contains data (length >= 1)
+                            initialize qualifiedActivities array
+                            get subtype from route params
+                            foreach item in vm.fitactivities
+                                acttype = item.ActivityTypeId
+                                if ((activityMeasureId == Entries || activityMeasureId == item.ActivityMeasureId) 
+                                    && (subtype (fitness, nutrition, wellness) == acttype))
+                                        push item to qualified activities array
+                            if the result is no qualified activities, show a negative validation message
+                    getFitnessEditDetails
+                        if app.profile is truthy and vm.editinfo is not empty []
+                            set form values (models) and validation states for 
+                                Measures
+                                    if vm.editinfo.ActivityMeasureId == null
+                                        Measures = "Entries"
+                                    else
+                                        Measures = vm.editinfo.ActivityMeasureId
+                                Goalname
+                                StartDate
+                                Duration
+                                Current amount
+                                Goal amount
+                                Notes
+                            Set selectedActivitiesList to vm.editinfo.ActivityIds
+                            if vm.editinfo.AllActivities == true
+                                activityselecttype = 'all
+                            else
+                                activityselecttype = 'userselected'
+                                toggleSelectedActivities('show')
+                            update date interval labels (week, day)
+                            updateIntervalType()
+                            if activityIds contains data (length >= 1)
+                                show selected activities div
+                    validateGoal
+                        if app.profile is truthy
+                            create a request model
+                            send a POST request with the request model to the api (validateFitnessGoal)
+                            if no exception returned, set validation ("unique for time") as true
+                            else (exception caught) set validation as false
+                other methods
+                    evaluateMeasureParams
+                        return as valid if no range is defined
+                        evaluate current amount (range, digits)
+                        evaluate goal amount (range, digits)
                     setLocalAppSettings
                         if app.appsettings is truthy
                             $scope.goalmaxage = app.appsettings.goalmaxagebio
@@ -1127,8 +1247,16 @@ GOALS
                             create a request model
                             send a GET request with the request model to the api (getFitnessActivities)
                             set vm.fitactivities = returned items
-                set a watcher on goalname, startdate, duration to call validateGoal() when all three are not undefined
-                activate the controller
+                    activate()
+                        make async calls to get promises
+                            setLocalAppSettings()
+                            loadFitnessEditDetails()
+                            getActivityMeasureMap()
+                            getActivityMeasures()
+                            getMasterActivityList()
+                        activate the controller via the common module with promises and controllerId
+                        set a watcher on goalname, startdate, duration to call validateGoal() when all three are not undefined
+                activate()
         editfitness.html
             Back button
             link to show help text in entry form
@@ -1152,98 +1280,104 @@ GOALS
 
     FORMS (Goals tab, Create button)
         controllers.goals.forms.js
-            set any default values needed for the view
-            event handlers
-                gotoForm
-                    routes to GoalsNewFitness (with subtype Fitness, Nutrition, Wellness) or GoalsNewBiometric
-            activate()
-                activate the controller
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                event handlers
+                    gotoForm
+                        routes to GoalsNewFitness (with subtype Fitness, Nutrition, Wellness) or GoalsNewBiometric
+                other methods
+                    activate
+                        activate the controller via the common module with controllerId
+                activate()
         forms.html
             Displays four goal categories: fitness, nutition, wellness, biometric
             Select button (with click handlers) and description for each category
 
     NEWBIOMETRIC (Goals tab, Create button, Biometric subbutton)
         controllers.goals.newbiometric.js
-            set any default values needed for the view
-            computed values
-            event handlers
-                checkMaxLength
-                    IE workaround on textarea maxlength (will we continue to support this for IE?)
-                goalDateRange
-                    validates the date entered against the allowable daterange (goalmaxage, goalmaxfuture)
-                    inputdate is between mindate/maxdate (inclusive)
-                evaluateDurationRange (when duration changed)
-                    if date-interval-day is checked, validate duration as between 1 and 365
-                    else, validate duration as between 1 and 52
-                updateMeasureParams (when measures selection is changed)
-                    if event.measures is truthy
-                        find the selected biometricId and biometricMeasureId in healthcategories
-                            and set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
-                        call evaluateMeasureParams to validate
-                evaluateMeasureParams
-                    if no range defined
-                        return that customrange is valid (true) for both current amount and goal amount
-                    else
-                        if current amount has changed and is not null
-                            if current amount is within minrange and maxrange (inclusive)
-                                set current amount customrange validity = true
-                            else
-                                set current amount customrange validity = false
-                            if current amount has digits after the decimal point
-                                if digits after the decimal is greater than allowed
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                event handlers
+                    checkMaxLength
+                        IE workaround on textarea maxlength (will we continue to support this for IE?)
+                    goalDateRange
+                        validates the date entered against the allowable daterange (goalmaxage, goalmaxfuture)
+                        inputdate is between mindate/maxdate (inclusive)
+                    evaluateDurationRange (when duration changed)
+                        if date-interval-day is checked, validate duration as between 1 and 365
+                        else, validate duration as between 1 and 52
+                    updateMeasureParams (when measures selection is changed)
+                        if event.measures is truthy
+                            find the selected biometricId and biometricMeasureId in healthcategories
+                                and set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
+                            call evaluateMeasureParams to validate
+                    evaluateMeasureParams
+                        if no range defined
+                            return that customrange is valid (true) for both current amount and goal amount
+                        else
+                            if current amount has changed and is not null
+                                if current amount is within minrange and maxrange (inclusive)
+                                    set current amount customrange validity = true
+                                else
+                                    set current amount customrange validity = false
+                                if current amount has digits after the decimal point
+                                    if digits after the decimal is greater than allowed
+                                        set current amount customdigits validity = true
+                                    else
+                                        set current amount customdigits validity = false
+                                else
                                     set current amount customdigits validity = true
+                            if goal amount has changed and is not null
+                                if goal amount is within minrange and maxrange (inclusive)
+                                    set goal amount customrange validity = true
                                 else
-                                    set current amount customdigits validity = false
-                            else
-                                set current amount customdigits validity = true
-                        if goal amount has changed and is not null
-                            if goal amount is within minrange and maxrange (inclusive)
-                                set goal amount customrange validity = true
-                            else
-                                set goal amount customrange validity = false
-                            if goal amount has digits after the decimal point
-                                if digits after the decimal is greater than allowed
+                                    set goal amount customrange validity = false
+                                if goal amount has digits after the decimal point
+                                    if digits after the decimal is greater than allowed
+                                        set goal amount customdigits validity = true
+                                    else
+                                        set goal amount customdigits validity = false
+                                else
                                     set goal amount customdigits validity = true
-                                else
-                                    set goal amount customdigits validity = false
-                            else
-                                set goal amount customdigits validity = true
-                updateIntervalType
-                    set $scope values for [...] based on selected interval type (day, week)
-                        dateintervalid
-                        intervaltype
-                        intervaltypeplural
-                    evaluateDurationRange()
-                    updateMeasureParams()
-                doSubmit
-                    if form is valid
-                        create the request model
-                            GoalMeasureId: 2 (hard coded)
-                            BiometricMeasureId: (from selected measure)
-                            BiometricOptionId: 1 (hard coded)
-                            AggregateFunctionId: 2 (hard coded)
-                            BiometricGoalName: get from form
-                            StartDate: get from form
-                            CurrentAmt: get from form
-                            GoalAmt: get from form
-                            DateIntervalID: get from $scope variable
-                            DateIntervalCount: get from form (duration)
-                            Notes: get from form
-                            BiometridIds: (from selected measure)
-                            BiometricTypeIds: [1] (hard coded)
-                            AllBiometrics: false (hard coded)
-                        send a POST request with the request model to the api (insertBiometricGoal)
-                        on success, if object returned
-                            route to GoalsDetailBiometric with the BiometricGoalId
-                validateGoal
-                    if app.profile is truthy
-                        create a request model
-                        send a POST request with the request model to the api (validateHealthGoal)
-                        if no exception returned, set validation as true
-                        else (exception caught) set validation as false
-            other methods
-            activate()
-                make async calls (get promises)
+                    updateIntervalType
+                        set $scope values for [...] based on selected interval type (day, week)
+                            dateintervalid
+                            intervaltype
+                            intervaltypeplural
+                        evaluateDurationRange()
+                        updateMeasureParams()
+                    doSubmit
+                        if form is valid
+                            create the request model
+                                GoalMeasureId: 2 (hard coded)
+                                BiometricMeasureId: (from selected measure)
+                                BiometricOptionId: 1 (hard coded)
+                                AggregateFunctionId: 2 (hard coded)
+                                BiometricGoalName: get from form
+                                StartDate: get from form
+                                CurrentAmt: get from form
+                                GoalAmt: get from form
+                                DateIntervalID: get from $scope variable
+                                DateIntervalCount: get from form (duration)
+                                Notes: get from form
+                                BiometridIds: (from selected measure)
+                                BiometricTypeIds: [1] (hard coded)
+                                AllBiometrics: false (hard coded)
+                            send a POST request with the request model to the api (insertBiometricGoal)
+                            on success, if object returned
+                                route to GoalsDetailBiometric with the BiometricGoalId
+                    validateGoal
+                        if app.profile is truthy
+                            create a request model
+                            send a POST request with the request model to the api (validateHealthGoal)
+                            if no exception returned, set validation as true
+                            else (exception caught) set validation as false
+                other methods
                     setLocalAppSettings
                         if app.appsettings is truthy
                             $scope.entrymaxage = app.appsettings.entrymaxagebio
@@ -1258,7 +1392,13 @@ GOALS
                             if an object gets returned
                                 add a "comkey" value to each object item
                                     comkey = item.BiometricID + '|' + item.BiometricMeasureId (not sure we will use this pattern in new tracker)
-                activate the controller
+                    activate
+                        make async calls to get promises
+                            setLocalAppSettings()
+                            getHealthCategories()
+                        activate the controller via the common module with promises and controllerId
+                        set a watcher on goalname, startdate, duration to call validateGoal() when all three are not undefined
+                activate()
         newbiometric.html
             Back button (or link)
             Help link
@@ -1275,105 +1415,106 @@ GOALS
 
     NEWFITNESS (Goals tab, Create button, Fitness/Nutrition/Wellness subbutton)
         controllers.goals.newfitness.js
-            set any default values needed for the view
-            computed values
-                isSelectedActivitiesRequired
-                    return !activityselecttype === 'all' (return true if activityselecttype == userselected, else return false)
-                    ** or using jQuery -- $('#selectedactivities :checked)
-                anyFitnessActivities(subtype, activitymeasureid)
-                    foreach item in vm.fitactivities
-                        if ((activityMeasureId == Entries || activityMeasureId == item.ActivityMeasureId) 
-                                && (subtype (fitness, nutrition, wellness) == acttype))
-                            return true
-                    return false
-            event handlers
-                checkMaxLength
-                    IE workaround on textarea maxlength (will we continue to support this for IE?)
-                goalDateRange
-                    validates input date to be between min/max
-                evaluateDurationRange
-                    if date-interval-day is checked, validate duration.rangeDays as between 1 and 365
-                    else validate duration.rangeWeeks as between 1 and 52
-                updateMeasureParams
-                    if event.measures is >= 1
-                        set $scope.amtmeasure = $('select[name="measures"] :selected').text();
-                        find the selected activityMeasureId in vm.measures
-                            set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
-                        evaluateMeasureParams()
-                        getFitnessActivities(event.measures) // filter activities by measure
-                    else if event.measures == -1000 ("Entries")
-                        set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
-                        evaluateMeasureParams()
-                        getFitnessActivities(-1000)
-                    else do nothing                
-                toggleSelectedActivities
-                    show/hide selected activities div
-                    if 'show'
-                        allActivitiesCategories = false
-                        set validity for selectedActivitiesList.required = false
-                        show the div
-                    else
-                        allactivityids = []
-                        allActivitiesCategories = true
-                        set validity for selectedActivitiesList.required = true
-                        hide the div
-                onChangeSelectedActivities
-                    sets viewmodel variable activityids = $('select[name="selectedactivitieslist"]').val() -- used for doSubmit
-                updateIntervalType
-                    set $scope values for [...] based on selected interval type (day, week)
-                        dateintervalid
-                        intervaltype
-                        intervaltypeplural
-                    evaluateDurationRange()
-                    updateMeasureParams()
-                doSubmit
-                    if form is valid
-                        var goalMeasureId, activityMeasureId
-                        if selected measure == 'Entries'
-                            goalMeasureId = 1
-                            activityMeasureId = null
-                        else
-                            goalMeasureId = 2
-                            activityMeasureId = Number(selected measure)
-                        create a request model
-                            ActivityGoalName: get from form
-                            StartDate: get from form
-                            ActivityMeasureId: activityMeasureId
-                            Notes: get from form
-                            DateIntervalCount: get from form (duration)
-                            DateIntervalId: get from scope variable
-                            CurrentAmt: get from form
-                            GoalAmt: get from form
-                            ActivityTypeIds: [ Number($routeParams.subtype) ] (as array)
-                            ActivityIds: activityIds
-                            AllActivities: allActivitiesCategories
-                            AggregateFunctionId: 1 (hard coded)
-                            GoalMeasureId: goalMeasureId
-                        send a POST request with the request model to the api (insertFitnessGoal)
-                        on success, route back to GoalDetailFitness with new ActivityGoalId
-                validateGoal
-                    if app.profile is truthy
-                        create a request model
-                        send a POST request with the request model to the api (validateFitnessGoal)
-                        if no exception returned, set validation for goal name.uniquefortime as true
-                        else (exception caught) set validation as false
-            other methods
-                evaluateMeasureParams
-                    set validity as true if no minrange/maxrange defined
-                    evaluate validity of current amount (range, digits)
-                    evaluate validity of goal amount (range, digits)
-                getFitnessActivities(activitymeasureid)
-                    if app.profile is truthy
-                        initialize qualifiedActivities array
-                        get subtype from route params
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                    isSelectedActivitiesRequired
+                        return !activityselecttype === 'all' (return true if activityselecttype == userselected, else return false)
+                        ** or using jQuery -- $('#selectedactivities :checked)
+                    anyFitnessActivities(subtype, activitymeasureid)
                         foreach item in vm.fitactivities
-                            acttype = item.ActivityTypeId
                             if ((activityMeasureId == Entries || activityMeasureId == item.ActivityMeasureId) 
-                                && (subtype (fitness, nutrition, wellness) == acttype))
-                                    push item to qualified activities array
-                        if the result is no qualified activities, show a negative validation message
-            activate()
-                make async calls to get promises
+                                    && (subtype (fitness, nutrition, wellness) == acttype))
+                                return true
+                        return false
+                event handlers
+                    checkMaxLength
+                        IE workaround on textarea maxlength (will we continue to support this for IE?)
+                    goalDateRange
+                        validates input date to be between min/max
+                    evaluateDurationRange
+                        if date-interval-day is checked, validate duration.rangeDays as between 1 and 365
+                        else validate duration.rangeWeeks as between 1 and 52
+                    updateMeasureParams
+                        if event.measures is >= 1
+                            set $scope.amtmeasure = $('select[name="measures"] :selected').text();
+                            find the selected activityMeasureId in vm.measures
+                                set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
+                            evaluateMeasureParams()
+                            getFitnessActivities(event.measures) // filter activities by measure
+                        else if event.measures == -1000 ("Entries")
+                            set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
+                            evaluateMeasureParams()
+                            getFitnessActivities(-1000)
+                        else do nothing                
+                    toggleSelectedActivities
+                        show/hide selected activities div
+                        if 'show'
+                            allActivitiesCategories = false
+                            set validity for selectedActivitiesList.required = false
+                            show the div
+                        else
+                            allactivityids = []
+                            allActivitiesCategories = true
+                            set validity for selectedActivitiesList.required = true
+                            hide the div
+                    onChangeSelectedActivities
+                        sets viewmodel variable activityids = $('select[name="selectedactivitieslist"]').val() -- used for doSubmit
+                    updateIntervalType
+                        set $scope values for [...] based on selected interval type (day, week)
+                            dateintervalid
+                            intervaltype
+                            intervaltypeplural
+                        evaluateDurationRange()
+                        updateMeasureParams()
+                    doSubmit
+                        if form is valid
+                            var goalMeasureId, activityMeasureId
+                            if selected measure == 'Entries'
+                                goalMeasureId = 1
+                                activityMeasureId = null
+                            else
+                                goalMeasureId = 2
+                                activityMeasureId = Number(selected measure)
+                            create a request model
+                                ActivityGoalName: get from form
+                                StartDate: get from form
+                                ActivityMeasureId: activityMeasureId
+                                Notes: get from form
+                                DateIntervalCount: get from form (duration)
+                                DateIntervalId: get from scope variable
+                                CurrentAmt: get from form
+                                GoalAmt: get from form
+                                ActivityTypeIds: [ Number($routeParams.subtype) ] (as array)
+                                ActivityIds: activityIds
+                                AllActivities: allActivitiesCategories
+                                AggregateFunctionId: 1 (hard coded)
+                                GoalMeasureId: goalMeasureId
+                            send a POST request with the request model to the api (insertFitnessGoal)
+                            on success, route back to GoalDetailFitness with new ActivityGoalId
+                    validateGoal
+                        if app.profile is truthy
+                            create a request model
+                            send a POST request with the request model to the api (validateFitnessGoal)
+                            if no exception returned, set validation for goal name.uniquefortime as true
+                            else (exception caught) set validation as false
+                other methods
+                    evaluateMeasureParams
+                        set validity as true if no minrange/maxrange defined
+                        evaluate validity of current amount (range, digits)
+                        evaluate validity of goal amount (range, digits)
+                    getFitnessActivities(activitymeasureid)
+                        if app.profile is truthy
+                            initialize qualifiedActivities array
+                            get subtype from route params
+                            foreach item in vm.fitactivities
+                                acttype = item.ActivityTypeId
+                                if ((activityMeasureId == Entries || activityMeasureId == item.ActivityMeasureId) 
+                                    && (subtype (fitness, nutrition, wellness) == acttype))
+                                        push item to qualified activities array
+                            if the result is no qualified activities, show a negative validation message
                     setLocalAppSettings
                         if app.appsettings is truthy
                             $scope.goalmaxage = app.appsettings.goalmaxageact
@@ -1412,7 +1553,15 @@ GOALS
                             create a request model
                             send a GET request with the request model to the api (getFitnessActivities)
                             set vm.fitactivities = returned items   
-                activate the controller
+                    activate()
+                        make async calls to get promises
+                            setLocalAppSettings()
+                            getActivityMeasureMap()
+                            getActivityMeasures()
+                            getMasterActivityList()
+                        activate the controller via the common module with promises and controllerId
+                        set a watcher on goalname, startdate, duration to call validateGoal() when all three are not undefined
+                activate()
         newfitness.html
             Back button
             link to show help text in entry form
@@ -1436,16 +1585,17 @@ GOALS
 
     VIEW (Goals tab, View button)
         controllers.goals.view.js
-            set any default values needed for the view
-            computed values
-            event handlers
-                goToFitnessDetail
-                    route to GoalsDetailFitness with goalId
-                goToBiometricDetail
-                    route to GoalsDetailBiometric with goalId
-            other methods
-            activate()
-                make async calls to get promises
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                event handlers
+                    goToFitnessDetail
+                        route to GoalsDetailFitness with goalId
+                    goToBiometricDetail
+                        route to GoalsDetailBiometric with goalId
+                other methods
                     getBiometricGoals
                         if app.profile is truthy
                             create a request model
@@ -1472,7 +1622,12 @@ GOALS
                                     set duration = xxx 'days'
                                 if item.ActivityMeasureName == null
                                     set item.ActivityMeasureName = 'Entries'
-                activate the controller
+                    activate
+                        make async calls to get promises
+                            getBiometricGoals()
+                            getFitnessGoals()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         view.html
             Activity Goals panel
                 items ordered by StartDate
@@ -1556,8 +1711,8 @@ INCLUDE
 
     TEAMCOMPETITIONS
         controllers.teams.teamcompetitions.js
-            add the controller and its dependencies to the angular module collection
-            define the controller function as teamsteamcompetitions
+            register the new controller and its dependencies on the app
+            define the controller function
                 get log function from common.logger
                 set any default values needed for the view
                 computed values
@@ -1654,6 +1809,14 @@ TEAMS
         controllers.teams.about.js
             see PropelHTML5\App\core\locale\en-US\about.js
             see PropelHTML5\App\core\locale\en-US\basedata.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any defaults needed for the view
+                other methods
+                    activate
+                        activate the controller via the common module with controllerId
+                activate()
         about.html
 
     ADDFAMILYMEMBERS
@@ -1671,7 +1834,7 @@ TEAMS
     DETAILSTANDARDCAPTAIN
         controllers.teams.detailstandardcaptain.js
             add the controller and its dependencies to the angular module collection
-            define the controller function as teamsdetailstandardcaptain
+            define the controller function
                 get log function from common.logger
                 set any defaults needed for the view
                 computed values
@@ -1776,6 +1939,9 @@ TEAMS
 
     EDITFORM
         controllers.teams.editform.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the login function from common.logger
             set default values needed for the view
             computed values
             event handlers
@@ -1791,24 +1957,27 @@ TEAMS
                         else if teamType = family
                             route to TeamsAddFamilyMembers with teamId
             other methods
+                getTeamTypes
+                    if app.api is truthy
+                        create a request model
+                        send a GET request with the request model to the api (getTeamTypes)
+                        on success, set vm.teamtypes = result items
+                getTeamDetail
+                    if app.profile is truthy and vm.teamtypes contains at least 1 teamtype
+                        create a request model
+                        send a GET request with the request model to the api (getTeamsInfo)
+                        on success, if the returned object is truthy
+                            set view models for display/edit 
+                                teamname
+                                teamtype
+                                teamdescription
+                            set teamTypeDescription from return object (match with vm.teamtypes on TeamTypeId)
+                activate
+                    make async calls to get promises
+                        getTeamTypes()
+                        getTeamDetail()
+                    activate the controller via the common module with the promises and controllerId
             activate()
-                make async calls (get promises)
-                    getTeamTypes
-                        if app.api is truthy
-                            create a request model
-                            send a GET request with the request model to the api (getTeamTypes)
-                            on success, set vm.teamtypes = result items
-                    getTeamDetail
-                        if app.profile is truthy and vm.teamtypes contains at least 1 teamtype
-                            create a request model
-                            send a GET request with the request model to the api (getTeamsInfo)
-                            on success, if the returned object is truthy
-                                set view models for display/edit 
-                                    teamname
-                                    teamtype
-                                    teamdescription
-                                set teamTypeDescription from return object (match with vm.teamtypes on TeamTypeId)
-                activate the controller
         editform.html
             Back button
             Help link
@@ -1824,29 +1993,34 @@ TEAMS
 
     NEWFORM (Teams tab, Create button)
         controllers.teams.newform.js
-            set default values needed for the view
-            computed values
-            event handlers
-                checkMaxLength
-                    IE workaround on textarea maxlength (will we continue to support this for IE?)
-                doSubmit
-                    if form is valid
-                        create a request model
-                        send a POST request with the request model to the api (insertTeam)
-                        on success, returns the resulting teamId
-                        if teamType = standard
-                            route to TeamsInviteMembers with teamId
-                        else if teamType = family
-                            route to TeamsAddFamilyMembers with teamId
-            other methods
-            activate()
-                make async calls (get promises)
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set default values needed for the view
+                computed values
+                event handlers
+                    checkMaxLength
+                        IE workaround on textarea maxlength (will we continue to support this for IE?)
+                    doSubmit
+                        if form is valid
+                            create a request model
+                            send a POST request with the request model to the api (insertTeam)
+                            on success, returns the resulting teamId
+                            if teamType = standard
+                                route to TeamsInviteMembers with teamId
+                            else if teamType = family
+                                route to TeamsAddFamilyMembers with teamId
+                other methods
                     getTeamTypes
                         if app.api is truthy
                             create a request model
                             send a GET request with the request model to the api (getTeamTypes)
                             on success, set vm.options = result items
-                activate the controller
+                    activate
+                        make async calls to get promises
+                            getTeamTypes()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         newform.html
             Show help link
             Panel to create new team
@@ -1857,60 +2031,61 @@ TEAMS
 
     VIEW (Teams tab, View button)
         controllers.teams.view.js
-            set any default values needed for the view
-                Pagination settings, etc.
-            computed values
-                displayEnrollCategory(key, competition.EnrollmentId)
-                    returns true if key and competition.EnrollmentId are of the same type (e.g., 'ind', enrollmentType.Individual)
-                displayAccessLevel(key, competition.AccessLevelId)
-                    returns true if key and competition.AccessLevelId are of the same type (e.g., 'pri', accessLevel.Private)
-                displayFitnessType
-                    create a list of all activityTypeIds for the competition (activityTypeList)
-                    returns true if the key's corresponding ActivityTypeId exists in the activityTypeList
-                displayBiometricType
-                    create a list of a biometricTypeIds for the competition (biometricTypeList)
-                    returns true if the key's corresponding BiometricTypeId exists in the biometricTypeList
-            event handlers
-                gotoTeamDetail
-                    sets teamType to 'standard' or 'family'
-                    sets memberType to 'captain' or 'member'
-                    sets context to teamType + '-' + memberType
-                    switch on context
-                        case familyTeamType + captainMemberType
-                            route to TeamsDetailFamilyCaptain (with TeamId)
-                        case familyTeamType + memberMemberType
-                            route to TeamsDetailFamilyMember (with TeamId)
-                        case standardTeamType + captainMemberType
-                            route to TeamsDetailStandardCaptain (with TeamId)
-                        case standardTeamType + memberMemberType
-                            route to TeamsDetailStandardMember (with TeamId)
-                gotoInvitation
-                    route to TeamsDetailStandardInvite (with TeamId)
-                gotoCompetitions
-                    route to CompetitionsGrid with route params
-                        enrollment category = team
-                        status = all
-                        itemsperpage = 20
-                        access level = public
-                        competitioncontext = open
-                gotoCompetitionDetail
-                    route to CompetitionDetail (with competitionId)
-                getMyTeams
-                    if app.profile is truthy
-                        create a request model
-                        send a GET request with the request model to the api (getMyTeams)
-                        on success, create a list of my team ids (myTeamsList)
-                        if vm.teamsinfo[i].TeamId exists in myTeamsList
-                            push vm.teamsinfo[i] onto vm.myTeams
-                        set pagination numberOfPages
-                getInvitations
-                    if app.profile is truthy
-                        create a request model
-                        send a GET request with the request model to the api (getTeamInvitations)
-                        on success, set vm.invitations to the response object
-            other methods
-            activate()
-                make async calls (get promises)
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                    Pagination settings, etc.
+                computed values
+                    displayEnrollCategory(key, competition.EnrollmentId)
+                        returns true if key and competition.EnrollmentId are of the same type (e.g., 'ind', enrollmentType.Individual)
+                    displayAccessLevel(key, competition.AccessLevelId)
+                        returns true if key and competition.AccessLevelId are of the same type (e.g., 'pri', accessLevel.Private)
+                    displayFitnessType
+                        create a list of all activityTypeIds for the competition (activityTypeList)
+                        returns true if the key's corresponding ActivityTypeId exists in the activityTypeList
+                    displayBiometricType
+                        create a list of a biometricTypeIds for the competition (biometricTypeList)
+                        returns true if the key's corresponding BiometricTypeId exists in the biometricTypeList
+                event handlers
+                    gotoTeamDetail
+                        sets teamType to 'standard' or 'family'
+                        sets memberType to 'captain' or 'member'
+                        sets context to teamType + '-' + memberType
+                        switch on context
+                            case familyTeamType + captainMemberType
+                                route to TeamsDetailFamilyCaptain (with TeamId)
+                            case familyTeamType + memberMemberType
+                                route to TeamsDetailFamilyMember (with TeamId)
+                            case standardTeamType + captainMemberType
+                                route to TeamsDetailStandardCaptain (with TeamId)
+                            case standardTeamType + memberMemberType
+                                route to TeamsDetailStandardMember (with TeamId)
+                    gotoInvitation
+                        route to TeamsDetailStandardInvite (with TeamId)
+                    gotoCompetitions
+                        route to CompetitionsGrid with route params
+                            enrollment category = team
+                            status = all
+                            itemsperpage = 20
+                            access level = public
+                            competitioncontext = open
+                    gotoCompetitionDetail
+                        route to CompetitionDetail (with competitionId)
+                    getMyTeams
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getMyTeams)
+                            on success, create a list of my team ids (myTeamsList)
+                            if vm.teamsinfo[i].TeamId exists in myTeamsList
+                                push vm.teamsinfo[i] onto vm.myTeams
+                            set pagination numberOfPages
+                    getInvitations
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamInvitations)
+                            on success, set vm.invitations to the response object
+                other methods
                     getTeamsInfo
                         if app.profile is truthy
                             create a request model
@@ -1923,7 +2098,12 @@ TEAMS
                             create a request model
                             send a GET request with the request model to the api (getTeamCompetitions)
                             on success, set vm.teamcompetitions to the response object
-                activate the controller
+                    activate
+                        make async calls to get promises
+                            getTeamsInfo()
+                            getTeamCompetitions()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         view.html
             My Teams panel
                 Title + number of teams
