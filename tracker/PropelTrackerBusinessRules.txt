@@ -166,6 +166,8 @@ ENTRIES
                 isDelegateSelected
                     are we keeping this?
             event handlers
+                checkMaxLength
+                    IE workaround on textarea maxlength (will we continue to support this for IE?)
                 onActivitySelect
                     if a biometric is selected
                         set some additional form values based on the selected activity
@@ -240,6 +242,8 @@ ENTRIES
                 isDelegateSelected
                     are we keeping this??
             event handlers
+                checkMaxLength
+                    IE workaround on textarea maxlength (will we continue to support this for IE?)
                 onActivitySelect
                     if an activity is selected
                         show the Share as Favorite button
@@ -456,6 +460,8 @@ ENTRIES
                 entryDateRange
                     validates the date entered against the allowable daterange
             event handlers
+                checkMaxLength
+                    IE workaround on textarea maxlength (will we continue to support this for IE?)
                 goToForm
                     route to the selected entry form component
                 onActivitySelect
@@ -520,6 +526,8 @@ ENTRIES
                 isValidActivity
                     validates activity as required field
             event handlers
+                checkMaxLength
+                    IE workaround on textarea maxlength (will we continue to support this for IE?)
                 goToForm
                     route to the selected entry form component
                 onActivitySelect
@@ -838,6 +846,8 @@ GOALS
             set any default values needed for the view
             computed values
             event handlers
+                checkMaxLength
+                    IE workaround on textarea maxlength (will we continue to support this for IE?)
                 goalDateRange (when StartDate changed)
                     validates input date to be between min/max, or same as original date
                 evaluateDurationRange (when duration changed)
@@ -849,7 +859,12 @@ GOALS
                             and set $scope values (amtmeasure, minrange, maxrange, decimaldigits)
                         call evaluateMeasureParams to validate
                 updateIntervalType
-                    -- TODO --
+                    set $scope values for [...] based on selected interval type (day, week)
+                        dateintervalid
+                        intervaltype
+                        intervaltypeplural
+                    evaluateDurationRange()
+                    updateMeasureParams()
                 whichMeasureSelected
                     updateMeasureParams()
                 whichDateIntervalChecked
@@ -955,6 +970,8 @@ GOALS
                             return true
                     return false
             event handlers
+                checkMaxLength
+                    IE workaround on textarea maxlength (will we continue to support this for IE?)
                 goalDateRange
                     validates input date to be between min/max, or same as original date
                 evaluateDurationRange
@@ -1150,6 +1167,8 @@ GOALS
             set any default values needed for the view
             computed values
             event handlers
+                checkMaxLength
+                    IE workaround on textarea maxlength (will we continue to support this for IE?)
                 goalDateRange
                     validates the date entered against the allowable daterange (goalmaxage, goalmaxfuture)
                     inputdate is between mindate/maxdate (inclusive)
@@ -1268,6 +1287,8 @@ GOALS
                             return true
                     return false
             event handlers
+                checkMaxLength
+                    IE workaround on textarea maxlength (will we continue to support this for IE?)
                 goalDateRange
                     validates input date to be between min/max
                 evaluateDurationRange
