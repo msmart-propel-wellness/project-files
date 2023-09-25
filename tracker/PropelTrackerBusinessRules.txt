@@ -1609,7 +1609,47 @@ TEAMS
 
     EDITFORM
         controllers.teams.editform.js
+            set default values needed for the view
+            computed values
+            event handlers
+                checkMaxLength
+                    IE workaround on textarea maxlength (will we continue to support this for IE?)
+                doSubmit
+                    if form is valid
+                        create a request model
+                        send a POST request with the request model to the api (updateTeam)
+                        on success, returns the resulting teamId
+                        if teamType = standard
+                            route to TeamsInviteMembers with teamId
+                        else if teamType = family
+                            route to TeamsAddFamilyMembers with teamId
+            other methods
+            activate()
+                make async calls (get promises)
+                    getTeamTypes
+                        if app.api is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamTypes)
+                            on success, set vm.teamtypes = result items
+                    getTeamDetail
+                        if app.profile is truthy and vm.teamtypes contains at least 1 teamtype
+                            create a request model
+                            send a GET request with the request model to the api (getTeamsInfo)
+                            on success, if the returned object is truthy
+                                set view models for display/edit 
+                                    teamname
+                                    teamtype
+                                    teamdescription
+                                set teamTypeDescription from return object (match with vm.teamtypes on TeamTypeId)
+                activate the controller
         editform.html
+            Back button
+            Help link
+            Edit Team panel
+                Team name (required, minlength = 3, maxlength = 100)
+                Team type (not editable)
+                Team description (optional)
+            Save button (disabled until form is valid)
 
     INVITEMEMBERS
         controllers.teams.invitemembers.js
