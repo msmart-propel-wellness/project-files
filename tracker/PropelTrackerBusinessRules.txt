@@ -1556,7 +1556,59 @@ INCLUDE
 
     TEAMCOMPETITIONS
         controllers.teams.teamcompetitions.js
+            add the controller and its dependencies to the angular module collection
+            define the controller function as teamsteamcompetitions
+                get log function from common.logger
+                set any default values needed for the view
+                computed values
+                    displayEnrollCategory(key, competition.EnrollmentId)
+                        returns true if key and competition.EnrollmentId are of the same type (e.g., 'ind', enrollmentType.Individual)
+                    displayAccessLevel(key, competition.AccessLevelId)
+                        returns true if key and competition.AccessLevelId are of the same type (e.g., 'pri', accessLevel.Private)
+                    displayFitnessType
+                        create a list of all activityTypeIds for the competition (activityTypeList)
+                        returns true if the key's corresponding ActivityTypeId exists in the activityTypeList
+                    displayBiometricType
+                        create a list of a biometricTypeIds for the competition (biometricTypeList)
+                        returns true if the key's corresponding BiometricTypeId exists in the biometricTypeList
+                    gotoCompetitions
+                        route to CompetitionsGrid with route params
+                            enrollment category = team
+                            status = all
+                            itemsperpage = 20
+                            access level = all
+                            competitioncontext = mine
+                    gotoCompetitionDetail
+                        route to CompetitionDetail (with competitionId)
+                event handlers
+                other methods
+                    getTeamDetail
+                        if app.profile is truthy and vm.teamtypes contains at least 1 teamtype
+                            create a request model
+                            send a GET request with the request model to the api (getTeamsInfo)
+                            on success, if the returned object is truthy
+                                set view models for display/edit 
+                                    teamname
+                    getTeamCompetitions
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getCompetitionMemberEntered)
+                            on success, set vm.teamcompetitions to the response object
+                    activate
+                        make async calls to get promises
+                            getTeamDetail()
+                            getTeamCompetitions()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         teams.teamcompetitions.html
+            shown as table (ordered by Start date, limite to 3)
+                Competition name (as clickable link to Competition Detail)
+                Start date, End date
+                Show any relevant icons
+                    Enrollment category (individual, team, group)
+                    Access level (private public)
+                    Activity types (fitness, nutrition, wellness, biometric)
+                Links (2) for "all my team competitions"
 
     widgetheader.html
 
@@ -1618,7 +1670,101 @@ TEAMS
 
     DETAILSTANDARDCAPTAIN
         controllers.teams.detailstandardcaptain.js
+            add the controller and its dependencies to the angular module collection
+            define the controller function as teamsdetailstandardcaptain
+                get log function from common.logger
+                set any defaults needed for the view
+                computed values
+                    showRemoveMember
+                        return true if the roster memberUid is not the logged in user memberUid
+                event handlers
+                    goToEdit
+                        route to TeamsEditForm with teamId
+                    deleteTeam
+                        hide the deleteConfirmation modal
+                        when hidden event fires, route to TeamsView
+                        doDeleteTeam(teamId)
+                    goToInviteMembers
+                        route to TeamsInviteMembers with teamId
+                    prepRemoveMember
+                        set removememberuid = id
+                        show the removeTeamMember modal
+                    removeMember
+                        if the removememberuid has a valid value (>= '00000000-0000-0000-0000-000000000000')
+                            create a request model
+                            send a DELETE request with the request model to the api (deleteTeamMember)
+                            on success, reset removememberuid (-1)
+                            getTeamRoster()
+                    getTeamRoster
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamRoster)
+                            on success
+                                set the vm.roster to the returned data items
+                                create eligiblecaptains array by pushing the rosterItems where 
+                                    rosterItem.ConfirmationStatusId == confirmed and rosterItem.IsOwner is false
+                    changeTeamCaptain
+                        if form is valid
+                            create a request model
+                            send a POST request with the request model to the api (changeTeamCaptain)
+                            on success, route back to TeamsView
+                other methods
+                    doDeleteTeam
+                        if app.profile is truthy
+                            create a request model
+                            send a DELETE request with the request model to the api (deleteTeam)
+                    getTeamDetail
+                        if app.profile is truthy and vm.teamtypes contains at least 1 teamtype
+                            create a request model
+                            send a GET request with the request model to the api (getTeamDetail)
+                            on success, if the returned object is truthy
+                                verify user is team captain
+                                    if app.profile.MemberUid != returnObj.OwnerUid
+                                        route back to TeamsView
+                                    set view models for display/edit 
+                                        teamname
+                                        teamtype
+                                        teamdescription
+                                    set teamTypeDescription from return object (match with vm.teamtypes on TeamTypeId)
+                                    getTeamRoster()
+                    getTeamTypes
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamTypes)
+                            on success, set vm.teamtypes = result items                        
+                    activate
+                        make async calls to get promises
+                            getTeamDetail()
+                            getTeamTypes()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         detailstandardcaptain.html
+            Back button
+            Team details panel
+                Team name
+                Team description
+                Edit button
+                Delete button
+            "No Items" div if no team competitions available
+            Competitions panel (see /App/layout/include/teams.teamcompetitions.html)
+            Roster panel
+                Achievement rank (if any)
+                Name (first, last, displayname)
+                Contact member link/button
+                Status
+                Remove?
+                Invite Members button
+                Change Captain button
+                Send Team Message button
+            Modals
+                Delete team confirmation (cancel, delete)
+                Remove team member (cancel, remove)
+                Change captain (select captain dropdown, cancel, save)
+                Send team message (where is this modal located?)
+                    Subject
+                    Message
+                    Cancel button
+                    Send button
 
     DETAILSTANDARDINVITE
         controllers.teams.detailstandardinvite.js
