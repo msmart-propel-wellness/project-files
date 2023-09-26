@@ -1833,7 +1833,7 @@ TEAMS
 
     DETAILSTANDARDCAPTAIN
         controllers.teams.detailstandardcaptain.js
-            add the controller and its dependencies to the angular module collection
+            register the new controller and its dependencies on the app
             define the controller function
                 get log function from common.logger
                 set any defaults needed for the view
@@ -1908,8 +1908,7 @@ TEAMS
                 Team description
                 Edit button
                 Delete button
-            "No Items" div if no team competitions available
-            Competitions panel (see /App/layout/include/teams.teamcompetitions.html)
+            Competitions panel (/App/layout/include/teams.teamcompetitions.html)
             Roster panel
                 Achievement rank (if any)
                 Name (first, last, displayname)
@@ -1935,7 +1934,76 @@ TEAMS
 
     DETAILSTANDARDMEMBER
         controllers.teams.detailstandardmember.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get log function from common.logger
+                set any defaults needed for the view
+                computed values
+                event handlers
+                    leaveTeam
+                        hide the leaveTeamConfirmation modal
+                        when hidden event fires, route to TeamsView
+                        doLeaveTeam(teamId)
+                other methods
+                    doLeaveTeam
+                        if app.profile is truthy
+                            create a request model
+                            send a DELETE request with the request model to the api (deleteTeamMember)
+                    getTeamDetail
+                        if app.profile is truthy and vm.teamtypes contains at least 1 teamtype
+                            create a request model
+                            send a GET request with the request model to the api (getTeamDetail)
+                            on success, if the returned object is truthy
+                                verify user is team captain
+                                    if app.profile.MemberUid != returnObj.OwnerUid
+                                        route back to TeamsView
+                                    set view models for display/edit 
+                                        teamname
+                                        teamtype
+                                        teamdescription
+                                    set teamTypeDescription from return object (match with vm.teamtypes on TeamTypeId)
+                                    getTeamRoster()
+                            else route to TeamsView
+                    getTeamTypes
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamTypes)
+                            on success, set vm.teamtypes = result items                        
+                    getTeamRoster
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamRoster)
+                            on success
+                                set obj to returned data items
+                                if obj is truthy
+                                    push to vm.roster those items where ConfirmationStatusId != declined
+                    activate
+                        make async calls to get promises
+                            getTeamTypes()
+                            getTeamDetail()
+                            getTeamRoster()
+                        activate the controller via the common module with promises and controllerId
+                activate()        
         detailstandardmember.html
+            Back button
+            Team details panel
+                Team name
+                Team description
+            Competitions panel (/App/layout/include/teams.teamcompetitions.html)
+            Roster panel
+                Achievement rank (if any)
+                Name (first, last, displayname)
+                Contact member link/button
+                Status
+                Leave Team button
+                Send Team Message button
+            Modals
+                Leave Team confirmation (cancel, delete)
+                Send team message (where is this modal located?)
+                    Subject
+                    Message
+                    Cancel button
+                    Send button
 
     EDITFORM
         controllers.teams.editform.js
