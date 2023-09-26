@@ -1886,8 +1886,7 @@ TEAMS
                             getTeamDetail()
                             getTeamRoster()
                         activate the controller via the common module with promises and controllerId
-                activate()
-                        
+                activate()          
         addfamilymembers.html
             Back button
             Select Family Members to Add to Team panel
@@ -1907,7 +1906,91 @@ TEAMS
 
     DETAILFAMILYCAPTAIN
         controllers.teams.detailfamilycaptain.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get log function from common.logger
+                set any defaults needed for the view
+                computed values
+                    showRemoveMember
+                        return true if the roster memberUid is not the logged in user memberUid
+                event handlers
+                    goToAddFamilyMembers
+                        route to TeamsAddFamilyMembers with teamId
+                    goToEdit
+                        route to TeamsEditForm with teamId
+                    deleteTeam
+                        hide the deleteConfirmation modal
+                        when hidden event fires, route to TeamsView
+                        doDeleteTeam(teamId)
+                    prepRemoveMember
+                        set removememberuid = id
+                        show the removeTeamMember modal
+                    removeMember
+                        if the removememberuid has a valid value (>= '00000000-0000-0000-0000-000000000000')
+                            create a request model
+                            send a DELETE request with the request model to the api (deleteTeamMember)
+                            on success, reset removememberuid (-1)
+                            getTeamRoster()
+                    getTeamRoster
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamRoster)
+                            on success
+                                set the vm.roster to the returned data items
+                other methods
+                    doDeleteTeam
+                        if app.profile is truthy
+                            create a request model
+                            send a DELETE request with the request model to the api (deleteTeam)
+                    getTeamDetail
+                        if app.profile is truthy and vm.teamtypes contains at least 1 teamtype
+                            create a request model
+                            send a GET request with the request model to the api (getTeamDetail)
+                            on success, if the returned object is truthy
+                                verify user is team captain
+                                    if app.profile.MemberUid != returnObj.OwnerUid
+                                        route back to TeamsView
+                                    set view models for display/edit 
+                                        teamname
+                                        teamtype
+                                        teamdescription
+                                    set teamTypeDescription from return object (match with vm.teamtypes on TeamTypeId)
+                                    getTeamRoster()
+                    getTeamTypes
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamTypes)
+                            on success, set vm.teamtypes = result items                        
+                    activate
+                        make async calls to get array of promises
+                            getTeamDetail()
+                            getTeamTypes()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         detailfamilycaptain.html
+            Back button
+            Team details panel
+                Team name
+                Team description
+                Edit button
+                Delete button
+            Competitions panel (/App/layout/include/teams.teamcompetitions.html)
+            Roster panel
+                Achievement rank (if any)
+                Name (first, last, displayname)
+                Contact member link/button
+                Status
+                Remove?
+                Add Team Members button
+                Send Team Message button
+            Modals
+                Delete team confirmation (cancel, delete)
+                Remove team member (cancel, remove)
+                Send team message (where is this modal located?)
+                    Subject
+                    Message
+                    Cancel button
+                    Send button
 
     DETAILFAMILYMEMBER
         controllers.teams.detailfamilymember.js
