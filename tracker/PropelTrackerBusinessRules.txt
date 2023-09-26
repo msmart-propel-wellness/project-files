@@ -1819,7 +1819,7 @@ TEAMS
                 activate()
         about.html
 
-    ADDFAMILYMEMBERS
+    ADDFAMILYMEMBERS (**Family teams are deprecated)
         controllers.teams.addfamilymembers.js
             register the new controller and its dependencies on the app
             define the controller function
@@ -1904,7 +1904,7 @@ TEAMS
                 Contact member link
                 Status (confirmed, declined, etc)
 
-    DETAILFAMILYCAPTAIN
+    DETAILFAMILYCAPTAIN (**Family teams are deprecated)
         controllers.teams.detailfamilycaptain.js
             register the new controller and its dependencies on the app
             define the controller function
@@ -1992,7 +1992,7 @@ TEAMS
                     Cancel button
                     Send button
 
-    DETAILFAMILYMEMBER
+    DETAILFAMILYMEMBER (**Family teams are deprecated)
         controllers.teams.detailfamilymember.js
         detailfamilymember.html
 
