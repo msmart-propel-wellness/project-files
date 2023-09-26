@@ -107,7 +107,7 @@ ENTRIES
                         on successful response, assign display values from the data object
                         set values to show calories, points, etc.
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getEntryDetailBiometric()
                         activate the controller via the common module with promises and controllerId
                 activate()
@@ -154,7 +154,7 @@ ENTRIES
                         make a DELETE call
                 other methods
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getEntryDetailFitness()
                         activate the controller via the common module with promises and controllerId
                 activate()
@@ -237,7 +237,7 @@ ENTRIES
                             save result as array of privateHealthCategories
                             getHealthCategories()
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             setLocalAppSettings()
                             getDelegateMembers()
                             getEditDetail()
@@ -406,7 +406,7 @@ ENTRIES
                                     see PropelHTML5\App\core\helpers\permissions.js
                                 set any pagination values needed for correct viewing
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getDelegateMembers()
                             getHealthCategories()
                             getBiometricEntries()
@@ -482,7 +482,7 @@ ENTRIES
                                 calculate the activity points and calories
                                 set any pagination values needed for correct viewing
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getDelegateMembers()
                             getFitnessActivities()
                             getFitnessEntries()
@@ -555,7 +555,7 @@ ENTRIES
                             save result as array of privateHealthCategories
                             getHealthCategories()
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             setLocalAppSettings()
                             getDelegateMembers()
                             getPrivateHealthCategories()
@@ -723,7 +723,7 @@ ENTRIES
                                 create a chart initialization object
                                 call singleBiometricEntriesGraph to activate the graph
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getBiometricMostRecentEntries()
                             getChartInfo()
                         activate the controller via the common module with promises and controllerId
@@ -788,7 +788,7 @@ ENTRIES
                         else
                             hide the chart panel
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getFitnessEntries()
                             getChartInfo()
                         activate the controller via the common module with promises and controllerId
@@ -857,7 +857,7 @@ GOALS
                             if DateIntervalId == "week, then set label to "weeks"
                             getChartInfo()
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getBiometricGoals()
                         activate the controller via the common module with promises and controllerId
                 activate()
@@ -937,7 +937,7 @@ GOALS
                         else
                             redirect to GoalsView
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getFitnessGoals()
                         activate the controller via the common module with promises and controllerId
                 activate()
@@ -1055,7 +1055,7 @@ GOALS
                                         push onto temp array
                                 assign temp array to vm.healthcategories
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             setLocalAppSettings()
                             loadBiometricEditDetail()
                             getHealthCategories()
@@ -1248,7 +1248,7 @@ GOALS
                             send a GET request with the request model to the api (getFitnessActivities)
                             set vm.fitactivities = returned items
                     activate()
-                        make async calls to get promises
+                        make async calls to get array of promises
                             setLocalAppSettings()
                             loadFitnessEditDetails()
                             getActivityMeasureMap()
@@ -1393,7 +1393,7 @@ GOALS
                                 add a "comkey" value to each object item
                                     comkey = item.BiometricID + '|' + item.BiometricMeasureId (not sure we will use this pattern in new tracker)
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             setLocalAppSettings()
                             getHealthCategories()
                         activate the controller via the common module with promises and controllerId
@@ -1554,7 +1554,7 @@ GOALS
                             send a GET request with the request model to the api (getFitnessActivities)
                             set vm.fitactivities = returned items   
                     activate()
-                        make async calls to get promises
+                        make async calls to get array of promises
                             setLocalAppSettings()
                             getActivityMeasureMap()
                             getActivityMeasures()
@@ -1623,7 +1623,7 @@ GOALS
                                 if item.ActivityMeasureName == null
                                     set item.ActivityMeasureName = 'Entries'
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getBiometricGoals()
                             getFitnessGoals()
                         activate the controller via the common module with promises and controllerId
@@ -1750,7 +1750,7 @@ INCLUDE
                             send a GET request with the request model to the api (getCompetitionMemberEntered)
                             on success, set vm.teamcompetitions to the response object
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getTeamDetail()
                             getTeamCompetitions()
                         activate the controller via the common module with promises and controllerId
@@ -1821,7 +1821,89 @@ TEAMS
 
     ADDFAMILYMEMBERS
         controllers.teams.addfamilymembers.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get log function from common.logger
+                set any defaults needed for the view
+                computed values
+                    disableAddBtns
+                        return vm.searchresults.length < 1
+                    displayWarning
+                        return vm.searchresults.length < 1
+                    disableRemoveSend
+                        return vm.invitationlist.length < 1
+                event handlers
+                    addAll
+                        adds all items in searchresults (regardless of select status) to invitationlist
+                        only adds items that are not already in invitationlist (prevents duplicates)
+                    removeAll
+                        resets invitationlist array to []
+                    addSelected
+                        gets ids of all selected items in searchresults
+                        create an add list
+                        create a copy of the invitationlist with only ids
+                        if items in the add list are not currently in the invitationlist copy
+                            add item to the invitationlist
+                    removeSelected
+                        get ids of all selected items in invitations
+                        remove items using two nested loops and array.splice() function
+                    gotoTeamDetail
+                        routes to TeamsDetailFamilyCaptain with teamId
+                    addFamilyMembers
+                        handler for Add To Team button; adds all invitationlist items
+                        foreach item in invitationlist
+                            create a request model
+                            send a POST request with the request model to the api (insertTeamMember)
+                            on success
+                                removeAll()
+                                route to TeamsDetailFamilyCaptain with teamId
+                    getRelatedMembers
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getRelatedMembers)
+                            on success
+                                create a tmp array of current family roster memberUids
+                                create a family array that includes those which are not in roster yet
+                                set vm.searchresults = family array
+                other methods
+                    getTeamDetail
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamDetail)
+                            get first item returned (team object)
+                            if return object is truthy
+                                set $scope.teamname = obj.TeamName
+                            else
+                                route to TeamsView
+                    getTeamRoster
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamRoster)
+                            set vm.roster to the returned data items
+                            getRelatedMembers()
+                    activate
+                        make async calls to get array of promises
+                            getTeamDetail()
+                            getTeamRoster()
+                        activate the controller via the common module with promises and controllerId
+                activate()
+                        
         addfamilymembers.html
+            Back button
+            Select Family Members to Add to Team panel
+                Related Members (multi-select)
+                    Add All To List button
+                    Add Selected To List button
+                    (Msg) "No results found.You are not connected to any additional family members to add to your family team."
+                Individuals to Add (multi-select)
+                    Remove Selected button
+                    Clear List button
+                Done button
+                Add To Team button
+            {Team Name} Team Roster panel
+                Member name (first, last, displayname)
+                Contact member link
+                Status (confirmed, declined, etc)
 
     DETAILFAMILYCAPTAIN
         controllers.teams.detailfamilycaptain.js
@@ -1896,7 +1978,7 @@ TEAMS
                             send a GET request with the request model to the api (getTeamTypes)
                             on success, set vm.teamtypes = result items                        
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getTeamDetail()
                             getTeamTypes()
                         activate the controller via the common module with promises and controllerId
@@ -1978,7 +2060,7 @@ TEAMS
                                 if obj is truthy
                                     push to vm.roster those items where ConfirmationStatusId != declined
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getTeamTypes()
                             getTeamDetail()
                             getTeamRoster()
@@ -2041,7 +2123,7 @@ TEAMS
                                 teamdescription
                             set teamTypeDescription from return object (match with vm.teamtypes on TeamTypeId)
                 activate
-                    make async calls to get promises
+                    make async calls to get array of promises
                         getTeamTypes()
                         getTeamDetail()
                     activate the controller via the common module with the promises and controllerId
@@ -2085,7 +2167,7 @@ TEAMS
                             send a GET request with the request model to the api (getTeamTypes)
                             on success, set vm.options = result items
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getTeamTypes()
                         activate the controller via the common module with promises and controllerId
                 activate()
@@ -2167,7 +2249,7 @@ TEAMS
                             send a GET request with the request model to the api (getTeamCompetitions)
                             on success, set vm.teamcompetitions to the response object
                     activate
-                        make async calls to get promises
+                        make async calls to get array of promises
                             getTeamsInfo()
                             getTeamCompetitions()
                         activate the controller via the common module with promises and controllerId
