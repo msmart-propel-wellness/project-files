@@ -2222,7 +2222,130 @@ TEAMS
 
     INVITEMEMBERS
         controllers.teams.invitemembers.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set default values needed for the view
+                computed values
+                    disableAddBtns
+                        return vm.searchresults.length < 1
+                    disableRemoveSend
+                        return vm.invitationlist.length < 1
+                    isNameRequired
+                        if 'All Groups" selected
+                            return true
+                        else
+                            if group member search allowed without member query (check configuration)
+                                return true
+                            else
+                                return false
+                    isGroupRequired
+                        if no names are entered
+                            return true
+                        else
+                            return false (currently there is no configuration to indicate whether a group member search is allowed without group query)                            
+                event handlers
+                    doSearch
+                        if form is valid
+                            if namesearch has a value and groupsearch is "All Groups"
+                                searchMembers(namesearch)
+                            if namesearch is empty and a group is selected
+                                searchGroup(groupid: groupsearch, membername: null)
+                            if namesearch has a value and a group is selected
+                                searchGroup(groupid: groupsearch, membername: namesearch)
+                    addAll
+                        adds all items in searchresults (regardless of select status) to invitationlist
+                        only adds items that are not already in invitationlist (prevents duplicates)
+                    removeAll
+                        resets invitationlist array to []
+                    addSelected
+                        gets ids of all selected items in searchresults
+                        create an add list
+                        create a copy of the invitationlist with only ids
+                        if items in the add list are not currently in the invitationlist copy
+                            add item to the invitationlist
+                    removeSelected
+                        get ids of all selected items in invitations
+                        remove items using two nested loops and array.splice() function
+                    gotoTeamDetail
+                        routes to TeamsDetailStandardCaptain with teamId
+                    sendInvitations
+                        show "isBusy" modal
+                        create an array of ids (includeMembers) from invitationlist where the id is not current in the team list
+                        create a request model
+                        send a POST request with the request model to the api (updateTeamMemberSelectMember)
+                        on success
+                            getTeamRoster()
+                            $scope.removeAll()
+                            hide "isBusy" modal
+                other methods
+                    searchMembers(membername)
+                        if membername is truthy
+                            create a request model
+                            initialize vm.searchresults array
+                            send a GET request with the request model to the api (searchMembers)
+                            on success
+                                if returned data items are truthy
+                                    push all items onto vm.searchresults where item.MemberUid is not currently in vm.rosterids
+                    searchGroup(groupid, membername)
+                        if groupid is truthy
+                            create a request model
+                            initialize vm.searchresults array
+                            send a GET request with the request model to the api (searchGroupMembers)
+                            on success
+                                if returned data items are truthy
+                                    push all items onto vm.searchresults where item.MemberUid is not currently in vm.rosterids
+                    setLocalAppSettings
+                        if app.appSettings is truthy
+                            set local scope variable searchGrpMbrNoMbrQry = app.appSettings.searchGrpMbrNoMbrQry
+                    getTeamDetail
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamDetail)
+                            on success
+                                if the returned object is truthy
+                                    set view models for display/edit 
+                                        teamname
+                                else
+                                    route to TeamsView
+                    getTeamRoster
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamRoster)
+                            set vm.roster to the returned data items
+                            push all MemberUids onto vm.rosterids
+                    getGroups
+                        if app.profile is truthy
+                            create a request model
+                                send a GET request with the request model to the api (searchGroups)
+                                on success, set vm.options to the returned data items
+                    activate
+                        make async calls to get array of promises
+                            setLocalAppSettings()
+                            getTeamDetail()
+                            getTeamRoster()
+                            getGroups()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         invitemembers.html
+            Back button
+            Find Members to Invite panel
+                Search by name input
+                Search by group dropdown list
+                Search button
+                Search results (multi-select)
+                    Add All To List button
+                    Add Selected To List button
+                Invitation list (multi-select)
+                    Remove Selected button
+                    Clear List button
+                Done button
+                Send Invitations button
+            {Team Name} Roster panel
+                Show achievement rank (if applicable)
+                Member name (first, last, displayname)
+                Contact member link
+                Status (confirmed, declined, etc)
 
     NEWFORM (Teams tab, Create button)
         controllers.teams.newform.js
