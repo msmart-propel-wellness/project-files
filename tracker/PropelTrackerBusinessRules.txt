@@ -37,7 +37,146 @@ COMPETITIONS
     
     DETAIL
         controllers.competitions.detail.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                    apipaging initialization object
+                    changePrevious(pgingid)
+                    changeNext(pgingid)
+                    changeStart(pgingid)
+                    changeEnd(pgingid)
+                computed values
+                    showLeaderboardAmounts
+                    isEnrollmentCategory(ref)
+                    isAccessLevel(ref)
+                    isCompetitionStatus(ref)
+                    isTallied
+                    isCompPubCanEnroll
+                    isCompPriOwner
+                    isCompTeamEntered
+                    isPublicOrPrivateAndEntered
+                    isStartingOnOrAfterToday
+                event handlers (TODO: change text 'event handlers' to 'click handlers')
+                    enterCompetition
+                    enterCompetitionContinue
+                    editCompetition
+                    sendIndividualInvitations
+                    sendTeamInvitations
+                    manageParticipation
+                    deleteCompetition
+                    teamLeaderboardDrilldown
+                    hideLeaderboardDrilldown
+                    groupLeaderboardDrilldown
+                    hideGroupLeaderboardDrilldown
+                    doIndividualInvitation
+                    displayCompetitionDetail
+                    loadOwnerInfo
+                    getCompetitionMembersEntered
+                    getFitnessActivities
+                    getMyCompetitionRank
+                    getLeaderboardTally
+                other methods
+                    getCompetitionDetail
+                    activate
+                        make async calls to get array of promises
+                            getCompetitionDetail()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         detail.html
+            Back button
+            if user not allowed to view competition
+                show div with explanation
+            if user allowed to view competition
+                Competition Details panel
+                    Competition
+                        Competition title
+                        Start date - End date
+                        if public competition
+                            Enrollment start date - Enrollment end date
+                        if ownerDisplay is not empty
+                            First name, last name, display name, 
+                        if enrollment category = team
+                            Entry name
+                    Description
+                        show icons/text for access level, enrollment category
+                        if not all activities allowed, display short list
+                        if displayViewFullActList, link to modal (#qualifiedActivities, showing competitionDetail.Activities)
+                        if all activities allowed, link to modal (#qualifiedActivities, showing vm.qualifiedActivities)
+                        if competition includes biometrics, show biometric measure
+                    Goal (if showLeaderboardAmounts)
+                        {TotalGoalAmount}  {MeasureName}
+                    Button (if isCompPubCanEnroll)
+                        Enter competition
+                    Button Group (if isCompPriOwner & (competition status is pending || isStartingOnOrAfterToday))
+                        Edit Competition
+                        Send Individual Invitations (if enrollment category = individual)
+                        Send Team Invitations (if enrollment category = team)
+                        Delete Competition
+                    Button Group (if isCompTeamEntered)
+                        Delete Confirmation (if isCompPriOwner && !(competition status is pending || isStartingOnOrAfterToday))
+                        Manage Participation
+            Invitation panel (if showIndInvite)
+                "Do you want to accept invitation?" (if !isTallied)
+                "Final tally is complete. Please decline to remove" (if isTallied)
+                Accept Invitation button
+                Decline Invitation button
+            Invited Individuals panel (if showIndInvitedList)
+                Achievement rank
+                Name (first, last, displayname)
+                Response (status)
+            My Rank panel
+                (if any individual rankings)
+                    Rank {LeaderboardTallyOrdinal in vm.indrankins}
+                    {TallyAmount} {MeasureName} (if showLeaderboardAmounts)
+                (if any team rankings)
+                    {TeamName} Rank {LeaderboardTallyOrdinal in vm.teamrankings}
+                    {TallyAmount} {MeasureName} (Average) (if showLeaderboardAmounts)
+                (if any group rankings)
+                    {GroupName} Rank {LeaderboardTallyOrdinal in vm.grouprankings}
+                    {TallyAmount} {MeasureName} (Average) (if showLeaderboardAmounts)
+            Final Leaderboard panel (Individual)
+                show if indleaderboard has entries and isPublicOrPrivateAndEntered
+                Rank {LeaderboardTallyOrdinal}
+                Achievement Rank and Medal (if showAchvRank)
+                Entry Name
+                Send message link
+                Entries {tallyamount} (if showLeaderboardAmounts)
+                Footer: pagination (show if pgtotal > 1)
+            Final Leaderboard panel (Team)
+                show if teamleaderboard has entries and isPublicOrPrivateAndEntered
+                Rank {LeaderboardTallyOrdinal}
+                {TeamName} (if isInterTenant)
+                {TeamName} as link (if !isInterTenant)
+                {tallyamount} (if showLeaderboardAmounts)
+            Team Contribution panel (currently set as style=display:none)
+                Header: Team Contribution: {drillteamname}
+                Rank
+                Entry name
+                Send message link (if communicate setting is true)
+                {tallyamount} (if showLeaderboardAmounts)
+                Footer: pagination (show if pgtotal > 1)
+            Final Leaderboard panel (Group)
+                show if groupleaderboard has entries and isPublicOrPrivateAndEntered
+                Rank {LeaderboardTallyOrdinal}
+                {GroupName} (if isInterTenant)
+                {GroupName} as link (if !isInterTenant)
+                {tallyamount} (if showLeaderboardAmounts)
+                Footer: pagination (show if pgtotal > 1)
+            Group Contribution panel (currently set as style=display:none)
+                Header: Group Contribution: {drillgroupname}
+                Rank
+                Entry name
+                Send message link (if communicate setting is true)
+                {tallyamount} (if showLeaderboardAmounts)
+                Footer: pagination (show if pgtotal > 1)
+            {syncLeaderboardMsg} (show if any leaderboard (ind, team, group) has 1+ entry)
+            Delete confirmation modal
+                Cancel button
+                Delete button
+            Entry confirmation modal
+                "Congrats, you entered the competition"
+                Continue button
     
     EDIT
         controllers.competitions.edit.js
