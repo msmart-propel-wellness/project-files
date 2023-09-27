@@ -2095,7 +2095,70 @@ TEAMS
 
     DETAILSTANDARDINVITE
         controllers.teams.detailstandardinvite.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get log function from common.logger
+                set any defaults needed for the view
+                computed values
+                event handlers
+                    doInvitation(action)
+                        switch on action
+                            'accept' - set confirmationstatusid = confirmed
+                            'decline' - set confirmationstatusid = declined
+                        create a request model
+                        send a POST request with the request model to the api (updateTeamMember)
+                        on success
+                            if confirmationstatusid == confirmed
+                                route to TeamsDetailStandardMember with teamId
+                            else
+                                route to TeamsView
+                other methods
+                    getTeamDetail
+                        if app.profile is truthy and vm.teamtypes contains at least 1 teamtype
+                            create a request model
+                            send a GET request with the request model to the api (getTeamDetail)
+                            on success, if the returned object is truthy
+                                set scope variables for display
+                                    teamname
+                                    teamtype
+                                    teamdesc
+                                    set teamtypedesc on matching item from vm.teamtypes
+                            else route to TeamsView
+                    getTeamTypes
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamTypes)
+                            on success, set vm.teamtypes = result items                        
+                    getTeamRoster
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getTeamRoster)
+                            on success
+                                set obj to returned data items
+                                if obj is truthy
+                                    push to vm.roster those items where ConfirmationStatusId != declined
+                    activate
+                        make async calls to get array of promises
+                            getTeamTypes()
+                            getTeamDetail()
+                            getTeamRoster()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         detailstandardinvite.html
+            Back button
+            Team Details panel
+                Team name
+                Description
+                    Team type description
+                    Team description
+            Invitation - {TeamName} panel
+                Accept Invitation button
+                Decline Invitation button
+            {TeamName} Roster panel
+                show achievement rank (if any)
+                Name (first, last, displayname)
+                Send Message link
+                Status (confirmed, pending, declined)
 
     DETAILSTANDARDMEMBER
         controllers.teams.detailstandardmember.js
