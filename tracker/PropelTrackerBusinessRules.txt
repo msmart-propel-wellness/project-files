@@ -61,7 +61,104 @@ COMPETITIONS
 
     VIEW (Competitions tab, View button)
         controllers.competitions.view.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                    displayEnrollCategory(key, competition.EnrollmentId)
+                        returns true if key and competition.EnrollmentId are of the same type (e.g., 'ind', enrollmentType.Individual)
+                    displayAccessLevel(key, competition.AccessLevelId)
+                        returns true if key and competition.AccessLevelId are of the same type (e.g., 'pri', accessLevel.Private)
+                    displayFitnessType(key, obj)
+                        create a list of all activityTypeIds for the competition (activityTypeList)
+                        returns true if the key's corresponding ActivityTypeId (fitness, nutrition, wellness) exists in the activityTypeList
+                    displayBiometricType
+                        create a list of a biometricTypeIds for the competition (biometricTypeList)
+                        returns true if the key's corresponding BiometricTypeId exists in the biometricTypeList
+                event handlers
+                    goToDetail(id)
+                        route to CompetitionsDetail with id (competitionid)
+                    goToInvite(id)
+                        find the competition with the id in vm.competitioninvitations
+                            if the enrollment category is individual
+                                route to CompetitionsDetail with id
+                            if the enrollment category is team
+                                route to CompetitionsParticipationInvite with id
+                            else if the enrollment category is group
+                                do nothing (group competitions don't get invitations)
+                    goToBadges
+                        route to SettingsBadges
+                    gotoCompetitions(ref)
+                        route to CompetitionsGrid with route params
+                            enrollment category = all
+                            status = all
+                            itemsperpage = 20
+                            switch on ref
+                                'mycomps'
+                                    access level = all
+                                    compcontext = mine
+                                'newcomps'
+                                    access level = pub
+                                    compcontext = open
+                                default
+                                    access level = all
+                                    compcontext = all
+                other methods
+                    getMyCompetitions
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getMyCompetitions)
+                            on success, set vm.mycompetitions to the returned items
+                    getCompetitionInvitations
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getCompetitionInvites)
+                            on success, if returned items are truthy
+                                set vm.competitioninvitations to returned items
+                    activate
+                        make async calls to get array of promises
+                            getMyCompetitions()
+                            getCompetitionInvitations()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         view.html
+            My Competitions panel
+                Title (My Competitions) (clickable - goes to competitions/grid/all/mine)
+                "No items" panel (show if no items)
+                Shown as table with pagination
+                On click, go to competition detail view
+                Competition title
+                Start date - End date
+                Summary of icons
+            Invitations panel (show if invitations > 0)
+                Shown as table
+                On click, go to invitation page
+                Team name
+                Captain (first, last, displayname)
+                Member count
+                Footer: View All My Competitions link
+            View Badges button
+            Private Competitions panel
+                "No Items" div (if applicable)
+                Competition title
+                Start date - End date
+                Name (first, last, displayname)
+                Challenger info
+                    first, last, displayname  (based on CompetitionInfo.TeamID < 1)
+                    OR first, last, displayname - entryname  (based on CompetitionInfo.TeamID >= 1)
+                Invited Team info
+                    Team name
+            Available New Competitions (public) panel
+                Panel title (clickable, go to competitions)
+                Panel body (show if any new public team competitions available)
+                    order by StartDate, limit to 4
+                    Competitions show as table
+                        StartDate - EndDate
+                        Show a corresponding icon based on enrollment category, access level, fitness type, or biometric type
+                Panel footer
+                    View All Available New Competitions (clickable)
+            View All Competitions button
 
 DASHBOARD
     controllers.dashboard.js
