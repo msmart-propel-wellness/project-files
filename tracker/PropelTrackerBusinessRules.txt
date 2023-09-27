@@ -13,6 +13,14 @@ COMPETITIONS
         controllers.competitions.about.js
             see PropelHTML5\App\core\locale\en-US\about.js
             see PropelHTML5\App\core\locale\en-US\basedata.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any defaults needed for the view
+                other methods
+                    activate
+                        activate the controller via the common module with controllerId
+                activate()
         about.html
         
     ADDINDIVIDUALS
