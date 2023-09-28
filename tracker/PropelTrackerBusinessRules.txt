@@ -43,41 +43,343 @@ COMPETITIONS
                 set any default values needed for the view
                     apipaging initialization object
                     changePrevious(pgingid)
+                        switch on pgingid
+                            2:  vm.apipage.subpgcurrent -= 1
+                                teamLeaderboardDrilldown(teamid, teamname)
+                            3:  vm.apipage.subpgcurrent -= 1
+                                groupLeaderboardDrilldown(groupid, groupname)
+                            default:    vm.apipage.pgcurrent -= 1
+                                        getLeaderboardTally()
                     changeNext(pgingid)
+                        switch on pgingid
+                            2:  vm.apipage.subpgcurrent += 1
+                                teamLeaderboardDrilldown(teamid, teamname)
+                            3:  vm.apipage.subpgcurrent += 1
+                                groupLeaderboardDrilldown(groupid, groupname)
+                            default:    vm.apipage.pgcurrent += 1
+                                        getLeaderboardTally()
                     changeStart(pgingid)
+                        switch on pgingid
+                            2:  vm.apipage.subpgcurrent = 1
+                                teamLeaderboardDrilldown(teamid, teamname)
+                            3:  vm.apipage.subpgcurrent = 1
+                                groupLeaderboardDrilldown(groupid, groupname)
+                            default:    vm.apipage.pgcurrent = 1
+                                        getLeaderboardTally()
                     changeEnd(pgingid)
+                        switch on pgingid
+                            2:  vm.apipage.subpgcurrent = vm.apipage.subpgtotal
+                                teamLeaderboardDrilldown(teamid, teamname)
+                            3:  vm.apipage.subpgcurrent = vm.apipage.subpgtotal
+                                groupLeaderboardDrilldown(groupid, groupname)
+                            default:    vm.apipage.pgcurrent = vm.apipage.pgtotal
+                                        getLeaderboardTally()
                 computed values
                     showLeaderboardAmounts
+                        return true if competitionDetail.CheckInCategoryID != biometric
                     isEnrollmentCategory(ref)
+                        returns true if ref and competitionDetail.EnrollmentCategoryId are of the same type (e.g., ind, team, group)
                     isAccessLevel(ref)
+                        returns true if ref and competitionDetail.AccessLevelId are of the same type (e.g., public, private)
                     isCompetitionStatus(ref)
+                        returns true if ref and competitionDetail.CompetitionStatusId are of the same type (pending, inprogress, completed)
                     isTallied
+                        returns competitionDetail.Tallied
                     isCompPubCanEnroll
+                        return competitionDetail.AccessLevelId == public
+                            && competitionDetail.CanEnroll
+                            && !competitionDetail.IsEntered
+                            && competitionDetail.EnrollmentCategoryId != group
                     isCompPriOwner
+                        return competitionDetail.AccessLevelId == private
+                            && competitionDetail.OwnerUid == app.profile.MemberUid
                     isCompTeamEntered
+                        return competitionDetail.EnrollmentCategoryId == team
+                            && competitionDetail.IsEntered
+                            && !competitionDetail.Tallied
                     isPublicOrPrivateAndEntered
+                        can only view leaderoard if (public) or (private and user is entered)
+                        return (competitionDetail.AccessLevelId == private && competitionDetail.IsEntered)
+                            || competitionDetail.AccessLevelId == public
                     isStartingOnOrAfterToday
+                        // Get start date as if it were Anywhere on Earth (UTC -12) to allow any time zone to return true
+                        // A stricter check would require getting the time zone setting from the API
+                        uses moment library (which is deprecated)
+                        return moment
+                            .utc(vm.competitiondetail.StartDate)
+                            .utcOffset('-12:00', true)
+                            .add(1, 'days')
+                            .isAfter(moment());
                 event handlers (TODO: change text 'event handlers' to 'click handlers')
                     enterCompetition
+                        if competitionDetail.EnrollmentCategoryId == team
+                            route to CompetitionsParticipation with competitionId
+                        else
+                            create a request model
+                            send a POST request with the request model to the api (insertIndCompEntry)
+                            on success
+                                set competitionDetail.IsEntered = true
+                                show entryConfirmation modal
                     enterCompetitionContinue
+                        location.reload()
                     editCompetition
+                        route to CompetitionEdit with competitionid
                     sendIndividualInvitations
+                        route to CompetitionsAddIndividuals with competitionid
                     sendTeamInvitations
+                        route to CompetitionsAddTeams with competitionid
                     manageParticipation
+                        route to CompetitionsParticipation with competitionid
                     deleteCompetition
-                    teamLeaderboardDrilldown
+                        hide deleteConfirmation modal
+                            on hidden, route to CompetitionsView
+                        doDeleteCompetition(competitionid)
+                    teamLeaderboardDrilldown(id, name)
+                        $scope.drillteamname = name
+                        vm.apipage.teamid = id
+                        vm.apipage.teamname = name
+                        create a request model
+                        send a GET request with the request model to the api (getTeamLeaderboardTallyPage)
+                        on success
+                            data = response.data
+                            obj = data.Items
+                            set apipage totals
+                                vm.apipage.subpgtotal = Math.ceil(data.TotalCount / vm.apipage.subpgsize);
+                                vm.apipage.subtotalcount = data.TotalCount;
+                            if return object is truthy
+                                vm.teamcontribution = obj
+                                // redact certain membername fields
+                                foreach item in vm.teamcontribution
+                                    if !item.CanBeProfileOnLeaderboard
+                                        item.FirstName = "*"
+                                        item.LastName = "*"
+                                        item.DisplayName = basedata.redactedname
+                                hide #teamleaderboard-panel
+                                show #teamcontribution-panel
                     hideLeaderboardDrilldown
-                    groupLeaderboardDrilldown
+                        vm.apipage.subpgcurrent = 1
+                        show #teamleaderboard-panel
+                        hide #teamcontribution-panel
+                    groupLeaderboardDrilldown(id, name)
+                        $scope.drillgroupname = name
+                        vm.apipage.groupid = id
+                        vm.apipage.groupname = name
+                        create a request model
+                        send a GET request with the request model to the api (getGroupLeaderboardTallyPage)
+                        on success
+                            data = response.data
+                            obj = data.Items
+                            set apipage totals
+                                vm.apipage.subpgtotal = Math.ceil(data.TotalCount / vm.apipage.subpgsize);
+                                vm.apipage.subtotalcount = data.TotalCount;
+                            if return object is truthy
+                                vm.groupcontribution = obj
+                                // redact certain membername fields
+                                foreach item in vm.groupcontribution
+                                    if !item.CanBeProfileOnLeaderboard
+                                        item.FirstName = "*"
+                                        item.LastName = "*"
+                                        item.DisplayName = basedata.redactedname
+                                hide #groupleaderboard-panel
+                                show #groupcontribution-panel
                     hideGroupLeaderboardDrilldown
-                    doIndividualInvitation
+                        vm.apipage.subpgcurrent = 1
+                        show #groupleaderboard-panel
+                        hide #groupcontribution-panel
+                    doIndividualInvitation(ref)
+                        if ref = accept
+                            create a request model where ConfirmationStatusId = confirmed
+                            send a POST request with the request model to the api (updateChallenge)
+                            reload the page
+                        else
+                            create a request model where ConfirmationStatusId = declined
+                            send a POST request with the request model to the api (updateChallenge)
+                            route to CompetitionsView
                     displayCompetitionDetail
+                        set scope variables for common display items
+                            comptitle, startdate, enddate, enrollstart, enrollend
+                            description, displayShortList, displayViewFullActList
+                        check for fitness subtype (fitness, nutrition, wellness)
+                            if activity types exist in competitiondetail
+                                create a comma-separated string of all activity type names (fitnessitems)
+                                create an array (subtypes) containing the ActivityTypeId
+                                set $scope.fitnesslist = fitnessitems
+                                if competitiondetail does not include all activities
+                                    sort an activitylist (vm.competitiondetail.Activities) by activity name
+                                    if activity list contains more than 5 activities
+                                        show first 5 activities with [...] to view full list
+                                    else
+                                        show all activities; do not show [...] to view full list
+                                    set $scope.displayShortList array to viewable activities (allowed)
+                                else
+                                    getFitnessActivities(subtypes)
+                            else
+                                set $scope.fitnesslist to empty string
+                            if competitiondetail.Biometrics is truthy
+                                set $scope.biomeasure to competitiondetail.biometrics[0].BiometricName
+                            // set goal amount
+                            $scope.totalgoalamt = competitiondetail.TotalGoalAmt
+                            // set goal measure description
+                            if competitiondetail.GoalMeasureId = count
+                                measurename = default entries label ("Count")
+                            else if competitiondetail.GoalMeasureId = measure
+                                if checkInCategoryId = activity
+                                    measurename = competitiondetail.ActivityMeasureName
+                                else if checkInCategoryId = biometric
+                                    measurename = competitiondetail.BiometricMeasureName
+                                else error
+                            else if competitiondetail.GoalMeasureId = points
+                                measurename = "Points"
+                            else error
+                            $scope.measurename = measurename
+                            $scope.showdetails = true
+                            if $scope.isPublicOrPrivateAndEntered()
+                                if competitiondetail.Tallied
+                                    set compLeaderboardPanelLbl = "Final Leaderboard"
+                                if competitiondetail.IsEntered
+                                    $scope.goToUserPage = true
+                                    getLeaderboardTally()
+                                else
+                                    getLeaderboardTally()
+                            if competitiondetail.IsEntered
+                                getMyCompetitionRank()
+                            if competitiondetail.AccessLevelId = private
+                                loadOwnerInfo()
                     loadOwnerInfo
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getCompetitionOwnerDetails)
+                            on success
+                                set vm.ownerinfo = response items
+                                set $scope.ownerDisplay = vm.ownerinfo[0]
                     getCompetitionMembersEntered
-                    getFitnessActivities
+                        //get all members invited to individual private competition
+                        if app.profile is truthy
+                            create a request model
+                            initialize some variables
+                                var memberInvite = [];
+                                var memberInvited = false;
+                                vm.indcompmembers = [];
+                            send a GET request with the request model to the api (getCompetitionMembersEntered)
+                            on success
+                                set obj to returned data items
+                                if obj is truthy
+                                    for all items in obj
+                                        if item.ConfirmationStatusId != declined
+                                            push item onto vm.indcompmembers
+                                        if item.MemberUid == app.profile.MemberUid
+                                            memberInvited = true
+                                            memberInvite = item
+                                // if member has been invited but not yet entered, show details and invite
+                                if memberInvited == true && memberInvite.ConfirmationStatusId == no response
+                                    $scope.showIndInvite = true
+                                    displayCompetitionDetail()
+                                    if !competitiondetail.Tallied
+                                        $scope.showIndInvitedList = true
+                                // if competition is a private individual competition and user has not been invited or declined, don't show details
+                                else
+                                    $scope.canViewCompetition = false
+                            // if competition is public or user is entered, display details
+                            if competitiondetail.AccessLevelId == public or competitiondetail.IsEntered
+                                displayCompetitionDetail()
+                            // if competition is a private team competition and user has not yet entered, don't display details (must respond to invite on participation invite)
+                            if (competitiondetail.AccessLevelId == private
+                                && competitiondetail.EnrollmentCategoryId == team
+                                && !competitiondetail.IsEntered)
+                                $scope.canViewCompetition = false
+                    getFitnessActivities(subtypes)
+                        create a request model
+                        send a GET request with the request model to the api (getFitnessActivities)
+                        on success
+                            set vm.fitactivities = returned data items
+                            foreach items in fitactivities
+                                if item.ActivityTypeId is in subtypes
+                                    if competitiondetail.ActivityMeasureId is null or ""
+                                        push item onto vm.qualifiedactivities
+                                    else if competitiondetail.ActivityMeasureId == item.ActivityMeasureID
+                                        push item onto vm.qualifiedActivities
                     getMyCompetitionRank
+                        if app.profile is truthy
+                            create a request model
+                            initialize arrays to []
+                                vm.rankings, vm.indrankings, vm.teamrankings, vm.grouprankings
+                            send a GET request with the request model to the api (getMyCompetitionRank)
+                            on success
+                                set obj = returned items
+                                if object is truthy
+                                    vm.rankings = obj
+                                    if vm.rankings has one or more items
+                                        // what kind of rankings do I have?
+                                        if vm.rankings[0].MemberUid has a valid value
+                                            vm.indrankings = vm.rankings
+                                        else if vm.rankings[0].TeamId >= 1
+                                            vm.teamrankings = vm.rankings
+                                        else if vm.rankings[0].GroupId >= 1
+                                            vm.grouprankings = vm.rankings
+                                        else error
                     getLeaderboardTally
+                        if app.profile is truthy
+                            initialize request model to {} and updatePage = false
+                            if $scope.goToUserPage == true
+                                set request model with "SkipToMyPage" : true
+                                $scope.goToUserPage = false
+                                updatePage = true
+                            else
+                                set request model with "Page" : vm.apipage.pgcurrent
+                            initialize arrays to []
+                                vm.leaderboard, vm.indleaderboard, vm.teamleaderboard, vm.groupleaderboard
+                                send a GET request with the request model to the api (getLeaderBoardTally)
+                                on success
+                                    set obj to returned data items
+                                    // set apipage total
+                                    vm.apipage.pgtotal = Math.ceil(data.TotalCount / vm.apipage.pgsize);
+                                    vm.apipage.totalcount = data.TotalCount;
+
+                                    //update current page from result (needed if SkipToMyPage was true)
+                                    if(updatePage){
+                                        vm.apipage.pgcurrent = data.Page;
+                                    }
+                                    if obj is truthy
+                                        set vm.leaderboard = obj
+                                        if vm.leaderboard has one more item
+                                            if vm.leaderboard[0].MemberUid has a valid value
+                                                foreach item in vm.leaderboard
+                                                    // redact data
+                                                    if !item.CanBeProfileOnLeaderboard
+                                                        item.FirstName = *
+                                                        item.LastName = *
+                                                        item.DisplayName = basedata.redactedname
+                                                    item.medal = conf.showAchvRank ? _$help.DetermineMedal(vm.leaderboard[i].AchvRankID) : "";
+                                                    item.achvrank = conf.showAchvRank ? _$help.DetermineRank(vm.leaderboard[i].AchvRankID) : "";
+                                                    push item onto vm.indleaderboard
+                                            else if vm.leaderboard[0].TeamId >= 1
+                                                vm.teamleaderboard = vm.leaderboard
+                                            else if vm.leaderboard[0].GroupId >= 1
+                                                vm.groupleaderboard = vm.leaderboard
+                                            else error
                 other methods
+                    doDeleteCompetition(id)
+                        if app.profile is truthy
+                            create a request model
+                            send a DELETE request with the request model to the api (deleteCompetition)
                     getCompetitionDetail
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getCompetitionDetail)
+                            on success
+                                set obj to first item in response items
+                                if obj is truthy
+                                    set vm.competitiondetail = obj
+                                    if competition.AccessLevelId == public or competition.IsEntered
+                                        displayCompetitionDetail()
+                                    else if competition.EnrollmentCategoryId == individual
+                                        && competition.AccessLevelId == private
+                                        && !competition.IsEntered
+                                            getCompetitionMemberEntered()
+                                    else
+                                        $scope.canViewCompetition = false
+                                else
+                                    returnToView()
                     activate
                         make async calls to get array of promises
                             getCompetitionDetail()
