@@ -486,7 +486,127 @@ COMPETITIONS
     
     GRID
         controllers.competitions.grid.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                    pageClass(pagenum)
+                        if pagenum == $scope.selectedPage
+                            return 'active'
+                        else return ''
+                    displayAccessLevel(key, accesslevelid)
+                        returns true if key and competition.AccessLevelId are of the same type (e.g., 'pri', accessLevel.Private)
+                click handlers
+                    changeSelectPage(pagenum)
+                        set $scope.selected page to pagenum
+                    goToDetail(id)
+                        route to CompetitionsDetail with competitionid
+                    updateGrid(view)
+                        switch on view
+                            'mine':
+                                vm.competitions = mycompetitions;
+                                $scope.isMine = true;
+                                $scope.isAvail = false;
+                                $scope.isAll = false;	
+                                $scope.compcontext = "mine";
+                            'avail':
+                                vm.competitions = availcompetitions;
+                                $scope.isMine = false;
+                                $scope.isAvail = true;
+                                $scope.isAll = false;
+                                $scope.compcontext = "open";
+                            'all':
+                                vm.competitions = allcompetitions;
+                                $scope.isMine = false;
+                                $scope.isAvail = false;
+                                $scope.isAll = true;
+                                $scope.compcontext = "all";
+                        resetFilter()
+                    resetFilter(event, form)
+                        set $scope variables that serve as models for the filter back to defaults
+                            $scope.accesslevel = 'all';
+                            $scope.enrollcat = 'all';
+                            $scope.compstatus = 'all';
+                            $scope.event.accesslevel = $scope.accesslevel;
+                            $scope.event.enrollcat = $scope.enrollcat;
+                            $scope.event.compstatus = $scope.compstatus;
+                            $scope.applyFilter();
+                    updateFilter(event, form)
+                        apply the user selected items to the filter
+                            var pagesize = event.itemsperpage || 20
+                            $scope.accesslevel = event.accesslevel;
+                            $scope.enrollcat = event.enrollcat;
+                            $scope.compstatus = event.compstatus;
+                            $scope.pagination = Pagination.getNew(pagesize);
+                            $scope.applyFilter();
+                    apply filter
+                        add items to the filtered competition list
+                            foreach item in vm.competitions
+                                if item matches the chosen selection in a filter dropdown
+                                    add item to the templist array
+                            assign templist to vm.filteredgrid
+                            set pagination numPages
+                other methods
+                    getMyCompetitions
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getMyCompetitions)
+                            on success
+                            assign obj to the returned items
+                            if obj is truthy
+                                push all items into allcompetitions array
+                                if item.IsEntered
+                                    push item onto mycompetitions array
+                                if item.AccessLevelId == public && item.EnrollmentCategoryId != group && !item.IsEntered && item.CanEnroll
+                                    push item onto availcompetitions array
+                                switch on $scope.compcontext
+                                    'mine':
+                                        set competitions = mycompetitions
+                                        $scope.isMine = true
+                                    'open':
+                                        set competitions = availcompetitions
+                                        $scope.isAvail = true
+                                    default:
+                                        set competitions = allcompetitions
+                                        $scope.isAll = true
+                                applyFilter()
+                    activate
+                        make async calls to get array of promises
+                            getMyCompetitions()
+                        activate the controller via the common module with promises and controllerId
+                        set defaults according to routeParams
+                            $scope.event.accesslevel = $routeParams.accesslevel;
+                            $scope.event.enrollcat = $routeParams.enrollcat;
+                            $scope.event.compstatus = $routeParams.status;
+                            $scope.event.itemsperpage = $routeParams.itemsperpage;
+                activate()
         grid.html
+            Back button
+            Competition Grid buttons (function as filters)
+                My Competitions
+                Available Competitions
+                All Competitions
+            Filter Competition List panel
+                Access level dropdown (All, Public, Private)
+                Enrollment category dropdown (All, Individual, Team, Group)
+                Competition status dropdown (All, Pending, InProgress, Completed)
+                Items per page (20, 50, 100, 250)
+                Update button (apply the selected filters)
+            Competitions panel (with # of filtered competitions)
+                "no items" div (if no items)
+                Icon for type of competition (public, private)
+                Start date
+                End date
+                Competition title (as link)
+                Type (enrollment category)
+                Status
+                Footer: pagination panel if pagination.numPages > 1
+                    Prev page "<" (if enabled, clickable)
+                    Prev page "<" (if disabled, not clickable)
+                    Active page numbers
+                    Next page ">" (if enabled, clickable)
+                    Next page ">" (if disabled, not clickable)
     
     PARTICIPATION
         controllers.competitions.participation.js
