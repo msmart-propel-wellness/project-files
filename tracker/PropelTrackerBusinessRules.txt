@@ -148,7 +148,90 @@ COMPETITIONS
     
     ADDTEAMS
         controllers.competitions.addteams.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set default values needed for the view
+                computed values
+                    disableAddBtns
+                        return vm.searchresults.length < 1
+                    disableRemoveSend
+                        return vm.invitationlist.length < 1
+                click handlers
+                    goToCompDetails
+                        route to CompetitionDetail with competitionid
+                    doCaptainSearch
+                        if form is valid
+                            create a request model
+                            send a GET request with the request model to the api (getTeamsInfo)
+                            set returned data items to vm.searchresults
+                    doTeamSearch
+                        if form is valid
+                            create a request model
+                            send a GET request with the request model to the api (getTeamsInfo)
+                            set returned data items to vm.searchresults
+                    addAll
+                        adds all items in searchresults (regardless of select status) to invitationlist (first, last, displayname)
+                        only adds items that are not already in invitationlist (prevents duplicates)
+                    removeAll
+                        resets invitationlist array to []
+                        resets searchresults to []
+                        resets namesearch to ""
+                        resets groupsearch to ""
+                        sets form to pristine state
+                    addSelected
+                        gets ids of all selected items in searchresults
+                        create an add list (first, last, displayname)
+                        create a copy of the invitationlist with only ids
+                        if items in the add list are not currently in the invitationlist copy
+                            add item to the invitationlist
+                    removeSelected
+                        get ids of all selected items in invitations
+                        remove items using two nested loops and array.splice() function
+                    sendInvitations
+                        show "isBusy" modal
+                        create an array of ids (includeMembers) from invitationlist where the id is not current in the team list
+                        create a request model
+                        send a POST request with the request model to the api (updateIndCompEntSelMember)
+                        on success
+                            getCompetitionMembersEntered()
+                            $scope.removeAll()
+                            hide "isBusy" modal after 2 seconds
+                other methods
+                    getCompetitionTeamChallenges
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getCompetitionTeamChallenges)
+                            on success
+                                set returned data items to vm.competitionteam
+                                foreach item in vm.competitionteam
+                                    push item.TeamID onto vm.list
+                    getCompetitionDetail
+                        if app.profile is truthy
+                        create a request model
+                        send a GET request with the request model to the api (getCompetitionDetail)
+                        on success
+                            set the first returned item to vm.competitiondetail
+                            set $scope.comptitle = vm.competitiondetail.CompetitionTitle
+                    activate
+                        make async calls to get array of promises
+                            getCompetitionTeamChallenges()
+                            getCompetitionDetail()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         addteams.html
+            Back button
+            Find Teams to Invite panel
+                Search by Captain Name (input with Search button)
+                Search by Team Name (input with Search button)
+                Search results (multi-select)
+                    Add All To List button
+                    Add Selected To List button
+                Invitation list (multi-select)
+                    Remove Selected button
+                    Clear List button
+                Done button
+                Send Invitations button                
     
     BADGES
         controllers.competitions.badges.js
