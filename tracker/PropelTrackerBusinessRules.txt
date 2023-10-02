@@ -1,4 +1,4 @@
-PropelTracker -- FrontEnd Business Rules
+    PropelTracker -- FrontEnd Business Rules
 Location of files
     PropelHtml5\App\controllers
     PropelHtml5\App\layout\{folder}
@@ -684,7 +684,238 @@ COMPETITIONS
     
     EDIT
         controllers.competitions.edit.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                    isActivityTypesRequired
+                        if any activity subtype is checked (fitness, nutrition, wellness), set validity to true
+                        else set to false
+                    isSelectedActivitiesRequired
+                        if selectedactivities is checked, return false
+                    isChallengingTeamRequired
+                        return #enrollment-category-team is checked
+                    hasActivityForMeasure(activitymeasureid) -- used in measureMapFilter
+                        creates a list of filtered activities based on the selected activity type (fitness, nutrition, wellness)
+                        returns true/false if activitymeasureid is found in list of filtered activities
+                click handlers
+                    checkMaxLength
+                        IE workaround on textarea maxlength (will we continue to support this for IE?)
+                    goalDateRange
+                        validates input date (startDate) to be between min/max || the same as original date
+                        goalEndDateRange()
+                    goalEndDateRange
+                        validates endDate to be between min/max && after or same as startDate
+                        updateMeasureParams()
+                    onActivityTypeChange
+                        when any activity subtype is checked (fitness, nutrition, wellness)
+                            filterActivityTypes()
+                            measureMapFilter()
+                    toggleSelectedActivities
+                        if state = 'show'
+                            set allActivitiesCategories = false
+                            set selectedactivitieslist validity to false
+                            show selectedactivitiesdiv
+                        else
+                            reset activityids (set to [])
+                            set allActivitiesCategories = true
+                            hide selectedactivitiesdiv
+                    onChangeSelectedActivities
+                        set activityids = all items with name=selectedactivitieslist
+                    whatActivitiesSelected(id)
+                        // populates the selected attributes for all activities that were previously selected
+                        push currently selected ActivityIDs from (vm.editinfo.Activities) onto a temp array (actids)
+                        if temp array has values
+                            return true (item is selected) if id is in the actids array, otherwise false
+                    toggleEnrollmentCategory
+                        if type = team 
+                            show challengingTeamDiv
+                        else
+                            hide challengingTeamDiv
+                    updateMeasureParams
+                        if selected measure has a value
+                            split the value to get activitymeasureid
+                        filterActivityTypes()
+                        $scope.amtmeasure = all selected measures text
+                        if $scope.activitymeasureid has a value
+                            search through the vm.measures list for the measure with the selected ActivityMeasureId
+                            set the start date, end date, duration, minrange, maxrange, allowable decimal digits from the selected item
+                            evaluateMeasureParams()
+                    evaluateMeasureParams
+                        valid = true if no range defined
+                        validate the amount against the allowed range of values
+                            **NOTE: this method differs from the same method in PRIVATEFITNESS
+                                HERE: > minrange && < maxrange
+                                THERE: >= minrange && <= maxrange
+                        validate the number of digits after the decimal in the amount
+                    doSubmit
+                        if form is valid
+                            initialize values needed for request model
+                                route, enrollcatid, allactivities, teamid
+                                activityids = [], activitytypeids = []
+                                dateintervalid = 7 // entire duration
+                                comkey = event.measures
+                                ids = comkey.split('|')
+                                goalmeasureid = Number(ids[0])
+                                actmeasureid = Number(ids[1]) || null
+                            if individual enrollment category is checked
+                                route = CompetitionsAddIndividuals
+                                enrollcatid = individual
+                            else
+                                route = CompetitionsAddTeams
+                                enrollcat = team
+                                teamid = selected challenging team
+                            push onto activitytypeids array the selected subtype id (fitness, nutrition, wellness)
+                            if allactivities is checked
+                                allactivities = true
+                            else
+                                allactivities = false
+                                activityids = selectedactivitieslist
+                            create the request model (see the file for specific values)
+                            send a POST request with the request model to the api (updatePrivateFitnessCompetition)
+                            on success
+                                route to CompetitionsDetail with competitionid
+                    filterActivityTypes
+                        initialize a temp array (obj) to []
+                        get selected activitytypes as subtypes array (fitness, nutrition, wellness)
+                        initialize vm.qualifiedactivities to []
+                        if "selected activities" chosen
+                            for all items in vm.allactivities
+                                push all activities onto obj where item.ActivityMeasureID == $scope.activitymeasureid
+                        else
+                            push vm.allactivities onto obj
+                        if obj is truthy and subtypes array has values
+                            foreach item in obj
+                                if item's ActivityTypeId exists in subtypes array
+                                    push item onto vm.qualifiedactivities
+                        if vm.qualifiedActivities has items
+                            set validity for 'hasQualifiedActivities' to true
+                        else
+                            set validity for 'hasQualifiedActivities' to false
+                other methods
+                    changeFirstLoad
+                        sets $scope.isFirstLoad = false
+                    setLocalAppSettings
+                        the app settings should either be only loaded once at the initial load of the tracker (possibly injected in the HTML - the current tracker does this) OR should be cached.
+                        sets the min/max for entry datepicker
+                        new endpoint for getting app settings when not authenticated: /configuration/default
+                        new endpoint for getting app settings when authenticated: /configuration/user
+                    measureMapFilter
+                        // method here is slightly different (in order) when compared to same method in PRIVATEFITNESS
+                        if measuremap and measures both have values
+                        set subtype = getSelectedActivityTypeArray()
+                        make working copy of vm.measuremap, vm.measures
+                        qualifiedmeasures = []
+                        foreach item x in vm.measuremap
+                            if x.ActivityTypeId exists in subtype
+                                foreach item y in vm.measures
+                                    if x.activityMeasureId = y.activitymeasureId and hasActivityForMeasure(x.activityMeasureId)
+                                        if y does not exist in vm.qualifiedmeasures
+                                            y.comkey = 'measure' + '|' + y.ActivityMeasureId
+                                            push y onto vm.qualifiedmeasures
+                        create an initial selectlist item for "Points", push onto vm.qualifiedmeasures
+                        create an initial selectlist item for "Entries", push onto vm.qualifiedmeasures
+                    getActivityMeasureMap
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getActivityMeasureMap)
+                            on success
+                                set vm.measuremap to the returned data items
+                                getCompetitionDetail()
+                    getActivityMeasures
+                        if app.profile is truthy and vm.measuremap contains items
+                            create a request model
+                            send a GET request with the request model to the api (getActivityMeasures)
+                            assign response items to vm.measures
+                            add hard-coded selectlist items to vm.measures for "Points" and "Entries"
+                    getFitnessActivities
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getFitnessActivities)
+                            on success
+                                if return items are truthy
+                                set vm.allactivities to return items
+                                filterActivityTypes()
+                    getTeamsInfo
+                        // get teams where current user is the captain
+                        if app.profile is truthy
+                            create a request model
+                            initialize vm.myteams = []
+                            send a GET request with the request model to the api (getTeams)
+                            on success, set obj to returned items
+                            if obj is truthy
+                                set vm.myteams = obj
+                    getSelectedActivityTypeArray
+                        returns the selected activityTypeIds (fitness, nutrition, wellness) in an array
+                    getCompetitionDetail
+                        if app.profile is truthy and vm.qualifiedmeasures has length
+                            create a request model
+                            send a GET request with the request model to the api (getCompetitionDetail)
+                            set the first returned item to variable obj
+                            if obj is truthy
+                                set vm.editinfo = obj
+                                set other $scope variables (which serve as Angular models) from the returned object
+                                    competitiondescription = obj.Description
+                                    competitionname = obj.CompetitionTitle (required)
+                                    startdate = moment(obj.StartDate) -- with format
+                                    update the datepicker with the new startdate (required)
+                                    enddate = moment(obj.EndDate) -- with format
+                                    amount = obj.IntervalGoalAmt
+                                    *check all selected activity types (fitness, nutrition, wellness)
+                                    activitymeasureid
+                                    measures = obj.GoalMeasureID + "|" + (obj.ActivityMeasureID || '') (required)
+                                    filterActivityTypes()
+                                    measureMapFilter()
+                                    if all activities are selected (obj.AllActivities)
+                                        check all activities on form
+                                        hide the selectedactivities div
+                                    else
+                                        check selectedactivities
+                                        show the selectedactivities div
+                                        push all selectedactivities ids onto array model for selectedactivitieslist
+                                    if selected EnrollmentCategoryId == individual
+                                        check individual on form
+                                    else
+                                        check team on form
+                                        set challengingTeam = obj.TeamId
+                                        toggleEnrollmentCategory('team')
+                            else
+                                route to CompetitionsView
+                    activate
+                        make async calls to get array of promises
+                            setLocalAppSettings()
+                            measureMapFilter()
+                            getActivityMeasureMap()
+                            getActivityMeasures()
+                            getFitnessActivities()
+                            getTeamsInfo()
+                        activate the controller via the common module with promises and controllerId
+                            on success
+                                // keep the non qualified activities from showing on load
+                                setTimeout(changeFirstLoad, 4000);
+                activate()
         edit.html
+            Back button
+            Help link
+            Edit Private Competition panel
+                row 1
+                    Competition title (input; required, minlength = 3, maxlength = 100)
+                    What type of competition (radio select; disabled for edit) - Individual, Team
+                        if Team, Challenging Team (dropdown; required)
+                row 2
+                    Start date (datepicker; required, pattern, daterange)
+                    End date (datepicker; required, pattern, daterange)
+                row 3
+                    What type(s) of activities? (checkboxes; 1 or more required)
+                    What do you want to track? (dropdown)
+                row 4
+                    Which activities will count? (radio select) - All Activities (with View Activities List link), Selected Activities
+                        if Selected Activities, Which Activities (multi-select dropdown; required)
+                    Goal (Measure) (input; required, pattern, custom range, custom digits)
+                row 5
+                    Competition Description (Optional) (textarea; optional, maxlength = 100)
+                Save button (disabled until form is valid)
     
     GRID
         controllers.competitions.grid.js
