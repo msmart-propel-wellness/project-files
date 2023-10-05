@@ -1041,10 +1041,219 @@ COMPETITIONS
                     Next page ">" (if enabled, clickable)
                     Next page ">" (if disabled, not clickable)
     
-    PARTICIPATION
+    PARTICIPATION (from competitions/detailstandardcaptain, goto competitions/detail, select Team Participation button)
         controllers.competitions.participation.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get the log function from common.logger
+                set any default values needed for the view
+                computed values
+                    isAccessLevel(ref)
+                        returns true if ref and competitiondetail.AccessLevelId are of the same type (public, private)
+                click handlers
+                    goToCompDetails
+                        route to CompetitionsDetail with competitionid
+                    goToNewTeam
+                        route to TeamsCreate
+                    cancel
+                        reset nonparticipationlist, participationlist, roster = []
+                        reset nonenteredteams, searchentered = ''
+                        hide #enterbtn, #updatebtn (with jQuery)
+                    addSelected
+                        gets ids of all items in nonparticipating (ids)
+                        create an add list (tmp)
+                        foreach item in nonparticipationlist
+                            if item.id exists in ids
+                                add item to participationlist
+                            else
+                                add item to tmp
+                        vm.nonparticipationlist = temp
+                    removeSelected
+                        create an empty tmp list (tmp)
+                        get ids of all items in participationlist (ids)
+                        foreach item in participationlist
+                            if item.id exists in ids
+                                add item to nonparticipationlist
+                            else
+                                add item to tmp
+                        vm.participationlist = tmp
+                    enterCompetition
+                        initialize include, exclude = []
+                        push all ids from participationlist onto include array
+                        push all ids from nonparticipationlist onto exclude array
+                        if include array has items
+                            create a request model
+                            send a POST request with the request model to the api (insertTeamCompEndSelMember)
+                            on success
+                                cancel()
+                                reset nonenteredteams = ''
+                                getMyCompetitionTeams()
+                    updateCompetition
+                        initialize include, exclude = []
+                        push all ids from participationlist onto include array
+                        push all ids from nonparticipationlist onto exclude array
+                        if include array has items
+                            create a request model
+                            send a POST request with the request model to the api (updateTeamCompEndSelMember)
+                            on success
+                                cancel()
+                                reset nonenteredteams = ''
+                                getMyCompetitionTeams()
+                    enterTeam
+                        set teamid to selectedteamid
+                        change label to reflect the entered team
+                        if teamid is an actual team (>=1)
+                            create a request model
+                            send a GET request with the request model to the api (getTeamRoster)
+                            on success
+                                if returned data items are truthy
+                                    set vm.roster to the returned items
+                                    foreach item in team roster
+                                        if confirmationstatusid == confirmed
+                                            create a member object for vm.participationlist
+                                                id: MemberUid
+                                                name: FirstName + " " + LastName (DisplayName)
+                                            push onto participationlist
+                                    set the participating list validity for required as true
+                                    show #enterbtn (with jQuery)
+                    getTeamParticipatingMembers
+                        set var participationvalues = searchentered
+                        split the participationvalues into an array (arr) by "|"
+                        teamid = arr[0]
+                        competitionid = arr[1]
+                        if teamid >= 1 (team is selected)
+                            create a request model
+                            send a GET request with the request model to the api (getCompetitionTeamMembers)
+                            on success
+                                set obj to returned data items
+                                    if obj is truthy
+                                        initialize enteredlist = []
+                                        push all MemberUids onto enteredlist
+                                        updateTeamParticipation($scope.teamid, enteredlist)
+                    updateTeamParticipation(teamid, enteredlist)
+                        if teamid >= 1 (team selected)
+                            create a request model
+                            initalize working arrays (nonparticipationlist, participationlist, roster)
+                            send a GET request with the request model to the api (getTeamRoster)
+                            on success
+                                set obj to returned data items
+                                if obj is truthy
+                                    vm.roster = obj
+                                    foreach item in obj
+                                        if confirmationstatusid == confirmed
+                                            create a member object for vm.participationlist
+                                                id: MemberUid
+                                                name: FirstName + " " + LastName (DisplayName)
+                                            if item.MemberUid exists in enteredlist
+                                                push member to participationlist
+                                            else
+                                                push member to nonparticipationlist
+                                    show #updatebtn (with jQuery)
+                    getFitnessActivities(subtypes)
+                        create a request model
+                        send a GET request with the request model to the api (getFitnessActivities)
+                        on success
+                            set vm.fitactivities = data.Items
+                            foreach item in vm.fitactivities
+                                get the activityTypeId
+                                if activityTypeId exists in subtypes
+                                    if vm.competitiondetail.ActivityMeasureId is null or empty
+                                        push item onto vm.qualifiedactivities
+                                    else if item.ActivityMeasureId matches competitiondetail.ActivityMeasureId
+                                        push item onto vm.qualifiedactivities
+                other methods
+                    getCompetitionDetail
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getCompetitionDetail)
+                            on success
+                                set obj to the first returned data item
+                                if obj is truthy
+                                    set common display items from obj
+                                        comptitle, startdate, enddate, enrollstart, enrollend, description
+                                    // check for fitness subtype
+                                    if activityTypes is truthy (vm.competitiondetail.ActivityTypes)
+                                        initialize subtypes = [], fitnessitems = ''
+                                        foreach item in acttypes
+                                            ** create a comma-separated list of activitytypes (fitnessitems)
+                                            push item.activitytypeid onto subtypes
+                                        $scope.fitnesslist = fitnessitems
+                                        if vm.competitiondetail.AllActivities
+                                            getFitnessActivities(subtypes)
+                                    else
+                                        fitnesslist = ''
+                                    if competitiondetail.Biometrics is truthy
+                                        $scope.biomeasure = vm.competitiondetail.Biometrics[0].BiometricName
+                                    totalgoalamt = vm.competitiondetail.TotalGoalAmt
+                                    // set goal measure description
+                                    if competitiondetail.GoalMeasureId = count
+                                        measurename = default entries label ("Count")
+                                    else if competitiondetail.GoalMeasureId = measure
+                                        if checkInCategoryId = activity
+                                            measurename = competitiondetail.ActivityMeasureName
+                                        else if checkInCategoryId = biometric
+                                            measurename = competitiondetail.BiometricMeasureName
+                                        else error
+                                    else if competitiondetail.GoalMeasureId = points
+                                        measurename = "Points"
+                                    else error
+                                    $scope.measurename = measurename
+                                else
+                                    returnToView()
+                    getMyCompetitionTeams
+                        if app.profile is truthy
+                            create a request model
+                            initalize working arrays (vm.allteams, vm.teamentered, vm.teamsnotentered)
+                            send a GET request with the request model to the api (getMyCompetitionTeams)
+                            on success
+                                set obj = returned data items
+                                if obj is truthy
+                                    vm.allteams = obj
+                                    foreach item in obj
+                                        if item.IsEntered
+                                            push item onto vm.teamsentered
+                                        else
+                                            push item onto vm.teamsnotentered
+                    activate
+                        make async calls to get array of promises
+                            getCompetitionDetail()
+                            getMyCompetitionTeams()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         participation.html
-
+            Back button
+            {CompetitionTitle} panel
+                Description
+                    Start date - End date
+                    Enrollment start date - Enrollment end date (if public)
+                    Description
+                    Access level icon
+                    Team icon
+                Goal
+                    Goal amount, Measure name
+                    Activity Types {fitnesslist} - {activityMeasureName}
+                    {Specific Activities} or {qualified activities with link}
+                    Biometrics, Measure name (if biometric)
+            Team Competition Entry and Participation panel
+                (if roster length < 1)
+                    (if teamsnotentered < 1 and teamsentered < 1)
+                        "You must be a captain to enter a team competition."
+                        "Create a new team"
+                    (if teamsnotentered >= 1)
+                        Select a Team to Enter
+                        Teams dropdown
+                        Continue button
+                    (if teamsentered >= 1)
+                        Select an Entered Team
+                        Manage Participation button
+                (if roster length >= 1)
+                    Selected Team: {TeamName}
+                    Non-Participating Members (multi-select list)
+                        Add Selected button
+                    Participating Members (multi-select list)
+                        Remove Selected button
+                    Cancel button
+                    Enter Competition button
     PARTICIPATIONINVITE
         controllers.competitions.participationinvite.js
         participationinvite.html    
