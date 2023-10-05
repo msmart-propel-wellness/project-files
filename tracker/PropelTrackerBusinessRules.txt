@@ -1254,6 +1254,7 @@ COMPETITIONS
                         Remove Selected button
                     Cancel button
                     Enter Competition button
+
     PARTICIPATIONINVITE
         controllers.competitions.participationinvite.js
         participationinvite.html    
@@ -3174,7 +3175,154 @@ INBOX
 INCLUDE
     CHANGEPASSWORD
         controllers.settings.changepassword.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                set any default values needed for the view
+                computed values
+                click handlers
+                    customValidate(event, passform)
+                        resets currentpass validity for apiValidationError to true
+                    customRequirements(event, passform)
+                        reset newpass validity for apirequirementstatus to true
+                        set var passcheck to true, and continue while it remains true
+                        // check for required minimum alpha characters
+                        if passcheck
+                            get count of alpha chars in newpassword using regex
+                            if count < vm.securityreq.MinRequiredAlphabeticCharacters
+                                set error msg
+                                set validity of custom for newpassword to false
+                                passcheck = false
+                            else
+                                clear error msg
+                                set validity of custom for newpassword to true
+                        // check for min required lower case alpha char
+                        if passcheck
+                            get count of lowercase alpha chars in newpassword using regex
+                            if count < vm.securityreq.MinRequiredLowercaseCharacters
+                                set error msg
+                                set validity of custom for newpassword to false
+                                passcheck = false
+                            else
+                                clear error msg
+                                set validity of custom for newpassword to true
+                        // check for min required upper case alpha char
+                        if passcheck
+                            get count of uppercase alpha chars in newpassword using regex
+                            if count < vm.securityreq.MinRequiredUppercaseCharacters
+                                set error msg
+                                set validity of custom for newpassword to false
+                                passcheck = false
+                            else
+                                clear error msg
+                                set validity of custom for newpassword to true
+                        // check for min require numberic chars
+                        if passcheck
+                            get count of numeric chars in newpassword using regex
+                            if count < vm.securityreq.MinRequiredNumericCharacters
+                                set error msg
+                                set validity of custom for newpassword to false
+                                passcheck = false
+                            else
+                                clear error msg
+                                set validity of custom for newpassword to true
+                        // check for min required non-alphanumeric chars
+                        if passcheck
+                            get count of non-alphanumeric chars in newpassword using regex
+                            if count < vm.securityreq.MinRequiredNonAlphanumericCharacters
+                                set error msg
+                                set validity of custom for newpassword to false
+                                passcheck = false
+                            else
+                                clear error msg
+                                set validity of custom for newpassword to true
+                        // check for min length
+                        if passcheck
+                            if newpass.length < vm.securityreq.MinRequiredPasswordLength
+                                set error msg
+                                set validity of custom for newpassword to false
+                                passcheck = false
+                            else
+                                clear error msg
+                                set validity of custom for newpassword to true
+                        // check against user name
+                        if passcheck
+                            if passcheck && !vm.securityreq.CanContainUserName
+                                if password contains app.profile.UserName
+                                    set error msg
+                                    set validity of custom for newpassword to false
+                                    passcheck = false
+                                else
+                                    clear error msg
+                                    set validity of custom for newpassword to true
+                        // check for max length
+                        if passcheck
+                            if newpass.length > vm.securityreq.MaxPasswordLength
+                                set error msg
+                                set validity of custom for newpassword to false
+                                passcheck = false
+                            else
+                                clear error msg
+                                set validity of custom for newpassword to true
+                    comparePasswords(event, passform)
+                        if newpassword != confirmpassword
+                            set validity for confirmpassword = false
+                        else
+                            set validity for confirmpassword = true
+                    doSubmit(event, passform)
+                        if form is valid
+                            create a request model
+                            send a POST request with the request model to the api (updatePassword)
+                            on success
+                                set obj to first of the returned data items
+                                if obj is truthy
+                                    if obj.PasswordChanged
+                                        show #passwordupdated div (with jQuery)
+                                        reset form input fields and form status (pristine)
+                                        // reload user prefs
+                                        getSecurityPref()
+                                    else
+                                        if obj.ValidateStatus == invalidCredentials (current password is incorrect)
+                                            set currentpassword validity of apiinvalidcredentials = false
+                                        else if obj.RequirementStatus != none
+                                            // new password does not meet requirements
+                                            set newpassword validity for apirequirementstatus = false
+                                        else
+                                            show "unspecified error" (#networkerror)
+                other methods
+                    getSecurityRequirements
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getSecurityRequirements) -- utilize cacheing?
+                            on success
+                                set obj to returned data items
+                                if obj is truthy
+                                    set vm.securityreq = obj[0]
+                    getSecurityPref
+                        if app.api is truthy
+                            create an empty request model {}
+                            send a GET request with the request to the api (getSecurityPref)
+                            on success
+                                set obj to the first returned item
+                                if obj is truthy
+                                    if obj.ChangePasswordAction == changepassword
+                                        showcurrentpass = true
+                                        set label and placeholder to "New Password"
+                                    else
+                                        showcurrentpass = false
+                                        set label and placeholder to "Password"
+                    activate
+                        make async calls to get array of promises
+                            getSecurityRequirements()
+                            getSecurityPref()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         settings.changepassword.html
+            Change Password panel
+                Password requirements alert box
+                Current password (input; with requirements messages)
+                New password (input; with requirements messages)
+                Verify password (input; with requirements messages)
+                Save button
 
     COMMUNICATION
         controllers.settings.communication.js
