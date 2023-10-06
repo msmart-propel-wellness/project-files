@@ -3338,7 +3338,63 @@ INCLUDE
 
     SECURITYQUESTIONS
         controllers.settings.securityquestions.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                set any default values needed for the view
+                computed values
+                click handlers
+                    updateQuestionAnswer(event, securityform)
+                        if app.api is truthy
+                            create a request model
+                            send a POST request with the request model to the api (updatePasswordSecurityQuestions)
+                            on success
+                                show #successalert
+                    updateAnswer(event, source)
+                        switch on source
+                            'pass':
+                                if event.securityanswer is truthy
+                                    set event.securityanswertext = event.securityanswer
+                                else
+                                    set event.securityanswertext = null
+                            'text':
+                                if event.securityanswertext is truthy
+                                    set event.securityanswer = event.securityanswertext
+                                else
+                                    set event.securityanswer = null
+                    getPasswordAnswer
+                        if app.profile is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getPasswordAnswer)
+                            on success
+                                set obj to returned data items
+                                if obj is truthy
+                                    set $scope.event variables from first returned item
+                                        securityquestion (PasswordQuestionID.toString)
+                                        securityanswer (PasswordAnswer)
+                                        securityanswertext (PasswordAnswer)
+                                        showtext = false
+                other methods
+                    getPasswordSecurityQuestions
+                        if app.api is truthy
+                            create a request model
+                            initialize vm.securityquestions = [];
+                            send a GET request with the request model to the api (getPasswordSecurityQuestions)
+                            on success
+                                set obj to returned data items
+                                if obj is truthy
+                                set vm.securityquestions = obj
+                                getPasswordAnswer()
+                    activate
+                        make async calls to get array of promises
+                            getPasswordSecurityQuestions()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         settings.securityquestions.html
+            Change Security Question panel
+                Instructions alert box
+                Security question (dropdown; required)
+                Answer (input; required); Show Text? (checkbox)
+                Save button
 
     TEXTING
         controllers.settings.texting.js
