@@ -3481,7 +3481,25 @@ SETTINGS
 
     COMMUNICATIONS
         controllers.settings.communications.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get log function from common.logger
+                set any default values needed for the view
+                other methods
+                    activate
+                        activate the controller via the common module with empty array of promises and controllerId
+                activate()
+
         communications.html
+            container files that includes the following partial view and controllers
+                controllers.settings.email.js
+                settings.email.html
+                controllers.settings.texting.js
+                settings.texting.html
+                controllers.settings.communication.js
+                settings.communication.html
+                controllers.settings.mailaddress.js
+                settings.mailaddress.html
 
     GROUPS
         controllers.settings.groups.js
