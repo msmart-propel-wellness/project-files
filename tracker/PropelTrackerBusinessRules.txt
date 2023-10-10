@@ -3430,7 +3430,103 @@ INCLUDE
 
     TEXTING
         controllers.settings.texting.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                set any default values needed for the view
+                computed values
+                    isMobilePhoneRequired
+                        return textevent.issmssubscribed
+                click handlers
+                    filterCarriers(textevent)
+                        initialize vm.selectedcarriers to []
+                        foreach item in vm.allcarriers
+                            if item.CarrierRegionName == textevent.country
+                                push item onto vm.selectedcarriers
+                    updateGatewayInfo(textevent)
+                        foreach item in vm.selectedcarriers
+                            if item.SmsCarrierGatewayId == textevent.carrier
+                                $scope.gateway = item.Gateway
+                                set $scope.gateway, replacing {number} with new mobile phone value
+                                return
+                        // gateway not found, so clear the value
+                        $scope.gateway = ''
+                    doSubmit(textevent, textform)
+                        if textform is valid and app.profile is truthy
+                            create a request model
+                            send a POST request with the request model to the api (updateContact)
+                            on success
+                                location.reload()
+                            else (catch)
+                                show "network error" error message
+                    getContact
+                        create a request model
+                        send a GET request with the request model to the api (getContact)
+                        on success
+                            set obj to the first returned data item
+                            if obj is truthy
+                                if obj.IsSmsSubscribed
+                                    set $scope.textevent.issmssubscribed = true
+                                set $scope.textevent.mobilephone = null or (cleared out digits)
+                                foreach item in vm.allcarriers
+                                    if obj.SmsCarrierGatewayId == item.SmsCarrierGatewayId
+                                        set $scope.textevent.country = item.CarrierRegionName
+                                filterCarriers($scope.textevent)
+                                $scope.textevent.carrier = null or obj.SmsCarrierGateway.toString()
+                            updateGatewayInfo($scope.textevent)
+                        else
+                            show "network error" error message
+                other methods
+                    getProfileConfigDetails
+                        if app.api is truthy
+                            create a request model (empty {})
+                            send a GET request with the request model to the api (getProfileConfigDetails)
+                            on success
+                                set obj to first returned item
+                                if obj is truthy
+                                    // show/hide mobile carrier
+                                    // set instruction text
+                                    if obj.ProfileSmsCarrierGatewayEnabled is truthy
+                                        show carrier
+                                        set texting instructions // "[...] enter your mobile number and select your phone carrier [...]"
+                                    else
+                                        hide carrier
+                                        set texting instructions // "[...] enter your mobile number [...]"
+                    getSmsCarrierGateways
+                        create a request model
+                        send a GET request with the request model to the api (getSmsCarrierGateways)
+                        on success
+                            set obj to returned data items
+                            if obj is truthy
+                                set vm.allcarriers to obj
+                                initialize var countrycodes = []
+                                foreach item in obj
+                                    if item.CountryCode is in countrycodes
+                                        create a country object
+                                            id: item.countrycode
+                                            name: item.CarrierRegionName
+                                        push country object onto vm.countries
+                                        push item.countrycode onto countrycodes
+                                    if item.CountryCode == US
+                                        push item onto vm.selectedcarriers
+                                set $scope.textevent.country = first item name in vm.countries
+                                getContact()
+                        else
+                            show "network error" error message
+                    activate
+                        make async calls to get array of promises
+                            getProfileConfigDetails()
+                            getSmsCarrierGateways()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         settings.texting.html
+            Texting panel
+                Instruction alert
+                Receive updates by text message? (checkbox)
+                Mobile number (input; required, pattern)
+                Country (dropdown)
+                Mobile carrier (dropdown)
+                Verify mobile address format (display)
+                Save button
 
     shell.html
 
