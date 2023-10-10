@@ -3326,7 +3326,75 @@ INCLUDE
 
     COMMUNICATION
         controllers.settings.communication.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                set any default values needed for the view
+                computed values
+                click handlers
+                    doSubmit(commevent, commform)
+                        if app.profile is truthy
+                            declare working temp variables
+                            var membershipemail = commevent.membership_email == 'YES'
+                            var membershipsms = commevent.membership_sms == 'YES'
+                            var competitionemail = commevent.publiccom_email == 'YES'
+                            var competitionsms = commevent.publiccom_sms == 'YES'
+                            var challengeemail = commevent.privatecomp_email == 'YES'
+                            var challengesms = commevent.privatecomp_sms == 'YES'
+                            var teamemail = commevent.team_email == 'YES'
+                            var teamsms = commevent.team_sms == 'YES'
+                            var socialemail = commevent.social_email == 'YES'
+                            var socialsms = commevent.social_sms == 'YES'
+                            var coachingemail = commevent.coaching_email == 'YES'
+                            var coachingsms = commevent.coaching_sms == 'YES'
+                            create a request model
+                            send a POST request with the request model to the api (updateMessagingCategoryPreferences)
+                            on success
+                                location.reload()
+                            else
+                                show "network error" with returned error message
+                other methods
+                    getMessageCategoryPreferences
+                        create a request model
+                        send a GET request with the request model to the api (getMessageCategoryPreferences)
+                        on success
+                            set obj = returned items
+                            if obj is truthy
+                                foreach item in returned items
+                                    set working variables
+                                        var msgcatname = item.MessageCategoryName
+                                        var emailsub = item.IsEmailSubscribed
+                                        var smssub = item.IsSmsSubscribed
+                                    switch on msgcatname
+                                        // set the checkbox models (checked, unchecked) according to the retrieved preferences for
+                                        Membership, Competition, Challenge, Team, Social, Coaching
+                        else
+                            show "network error" with returned message
+                    activate
+                        make async calls to get array of promises
+                            getMessageCategoryPreferences()
+                        activate the controller via the common module with promises and controllerId
+                activate()
         settings.communication.html
+            Communication Preferences panel
+                Membership
+                    Email checkbox
+                    Text Message checkbox
+                Public competition
+                    Email checkbox
+                    Text Message checkbox
+                Private competition
+                    Email checkbox
+                    Text Message checkbox
+                Team
+                    Email checkbox
+                    Text Message checkbox
+                Social
+                    Email checkbox
+                    Text Message checkbox
+                Coaching
+                    Email checkbox
+                    Text Message checkbox
+                Save button
 
     EMAIL
         controllers.settings.email.js
