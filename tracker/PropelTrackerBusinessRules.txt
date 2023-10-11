@@ -3733,11 +3733,70 @@ SETTINGS
 
     GROUPS
         controllers.settings.groups.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get log function from common.logger
+                set any default values needed for the view
+                computed values
+                    pageClass(pagenum)
+                        if pagenum == selectedPage
+                            return 'active' class
+                        else
+                            return ''
+                click/event handlers
+                    changeSelectPage(pagenum)
+                        set selectedPage to pagenum
+                    getGroupMembers(id, name)
+                        create panel header with group name (name param)
+                        reset pagination values
+                        foreach item in vm.mygroups
+                            create a jQuery node selectory string for the item
+                            if item.GroupId == id
+                                add class 'selected' to the node using jQuery
+                            else
+                                remove class 'selected' from the node using jQuery
+                        create a request model
+                        send a GET request with the request model to the api (getMemberGroupDetail)
+                        on success
+                            set vm.groupmembers to returned data items
+                            set pagination numPages (Math.ceil(groupMembers.length / pagination.perPage))
+                            foreach item in vm.groupmembers
+                                if item.DisplayName is blank
+                                    // redact member name fields
+                                    item.FirstName = *
+                                    item.LastName = *
+                                    item.DisplayName = basedata.redactedname
+                other methods
+                    getMemberGroups
+                        if app.profile is truthy
+                            initialize vm.mygroups to []
+                            create a request model
+                            send a GET request with the request model to the api (getMemberGroups)
+                            on success
+                                set vm.mygroups to returned data items
+                    activate
+                        make async calls to get promises
+                            getMemberGroups()
+                        activate the controller via the common module with array of promises and controllerId
+                activate()
         groups.html
+            My Groups panel
+                "No items" div (if applicable)
+                items ordered by GroupName
+                Group name (as clickable link)
+            Group Members: {GroupName} panel
+                "No members" div (if applicable)
+                items ordered by LastName, FirstName, DisplayName
+                Contact member link (opens modal)
+                Pagination panel (footer)
 
     PASSWORD
         controllers.settings.password.js
+            companion file; provides no real user functionality
         password.html
+            container file for 
+                settings.changepassword.html
+                settings.securityquestions.html
 
     PROFILE
         controllers.settings.profile.js
