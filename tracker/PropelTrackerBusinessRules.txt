@@ -3708,7 +3708,34 @@ SETTINGS
 
     BADGES
         controllers.settings.badges.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get log function from common.logger
+                set any default values needed for the view
+                computed values
+                click/event handlers
+                other methods
+                    getCompetitionBadges
+                        if app.profile is truthy
+                            create a request model
+                            initialize vm.badges to empty array
+                            send a GET request with the request model to the api (getCompetitionBadges)
+                            on success
+                                set obj to returned items
+                                if obj is truthy
+                                    set vm.badges to obj
+                    activate
+                        make async calls to get promises
+                            getCompetitionBadges()
+                        activate the controller via the common module with array of promises and controllerId
+                activate()
         badges.html
+            My Badges panel
+            "No items" div (if applicable)
+            Badge items (order by BadgeDate)
+                Badge name
+                Awarded {Date}
+                Description
 
     COMMUNICATIONS
         controllers.settings.communications.js
