@@ -1,4 +1,5 @@
-    PropelTracker -- FrontEnd Business Rules
+PropelTracker -- FrontEnd Business Rules
+
 Location of files
     PropelHtml5\App\controllers
     PropelHtml5\App\layout\{folder}
@@ -3686,6 +3687,12 @@ INCLUDE
 
 SETTINGS
     controllers.settings.js
+        file (not a true controller) that includes data for settings categories
+            Profile
+            Password
+            Communications
+            Groups
+            Badges
 
     AUTHPREF
         controllers.settings.authpref.js
@@ -3734,7 +3741,190 @@ SETTINGS
 
     PROFILE
         controllers.settings.profile.js
+            register the new controller and its dependencies on the app
+            define the controller function
+                get log function from common.logger
+                set any default values needed for the view
+                computed values
+                click handlers
+                    editUserName
+                        set $scope input visibility variable to true
+                    saveUserName
+                        clear $scope username
+                        set $scope input visibility variable to false
+                        create a request model
+                        send a POST request with the request model to the api (updateProfile)
+                        on success
+                            location.reload()
+                    editDisplayName
+                        set $scope input visibility variable to true
+                    saveDisplayName
+                        clear $scope displayname
+                        set $scope input visibility variable to false
+                        create a request model
+                        send a POST request with the request model to the api (updateProfile)
+                        on success
+                            location.reload()
+                    editLocale
+                        set $scope input visibility variable to true
+                        foreach item in vm.locales
+                            if item.locale == $scope.userLocale
+                                $scope.localeSelect = item
+                    saveLocale
+                        set $scope language to $scope.localeSelect.DisplayName
+                        set $scope input visibility variable to false
+                        create a request model
+                        send a POST request with the request model to the api (updateProfile)
+                        on success
+                            location.reload()
+                    editUnits
+                        set $scope input visibility variable to true
+                        foreach item in vm.units
+                            if item.MeasureSystemId == $scope.measuresystemid
+                                $scope.measureSelect = item
+                    saveUnits
+                        set $scope measuresystem to $scope.measureSelect.Name
+                        set $scope input visibility variable to false
+                        create a request model
+                        send a POST request with the request model to the api (updateProfile)
+                        on success
+                            location.reload()
+                    editEmail
+                        show email input
+                        hide email text
+                        show email save link
+                        hide email update link
+                    saveEmail
+                        hide email input
+                        show email text
+                        hide email save link
+                        show email update link
+                        create a request model
+                        send a POST request with the request model to the api (updateProfile)
+                        on success
+                            location.reload()
+                    editMobile
+                        show mobile input
+                        hide mobile text
+                        show mobile save link
+                        hide mobile update link
+                    saveMobile
+                        hide mobile input
+                        show mobile text
+                        hide mobile save link
+                        show mobile update link
+                        notImplemented()
+                    printCertificate
+                        notImplemented()
+                    notImplemented
+                        alert("not implemented")
+                    toggleFavoritesShared
+                        create a request model where item "IsFavoritesShared" = $("#allowViewFav").prop('checked') -- true or false
+                        send a POST request with the request model to the api (updateProfile)
+                        on success
+                            location.reload()
+                    deleteFavorite(id)
+                        create a request model
+                        send a POST request with the request model to the api (updateFavoriteActivities)
+                        on success
+                            location.reload()
+                    doSubmit
+                        // add new favorite activity
+                        get id of selected favorite activity
+                        if id is not in vm.favactivities
+                            push id onto vm.favactivities
+                            create a request model
+                            send a POST request with the request model to the api (updateFavoriteActivities)
+                            on success
+                                location.reload()
+                    getFitnessActivities
+                        if app.api is truthy
+                            create a request model
+                            initialize to [] (vm.allenabledpubact, vm.myfavorites)
+                            send a GET request with the request model to the api (getFitnessActivities)
+                            on success
+                                set obj to returned items
+                                if obj is truthy
+                                    vm.allenabledpubact = obj
+                                    foreach item in obj
+                                        if item.ActivityId is in vm.favactivities
+                                            push item onto vm.myfavorites
+                other methods
+                    getProfile
+                        if app.api is truthy
+                            create an empty request model
+                            send a GET request with the request model to the api (getProfile)
+                            on success
+                                set obj to the first returned item
+                                if obj is truthy
+                                    set vm.profile = obj
+                                    set $scope display variables (firstname, lastname, username, displayname, emailAddress, locale, measuresystemid)
+                                    set $scope rank = conf.showAchvRank ? _$help.DetermineRank(obj.AchvRankID) : "";
+                                    if obj.IsFavoritesShared
+                                        set checked property for #allowViewFav
+                    getFavoriteActivities
+                        if app.api is truthy
+                            create a request model
+                            send a GEt request with the request model to the api (getFavoriteActivities)
+                            on success
+                                foreach item in returned items
+                                    push item.ActivityId onto vm.favactivities
+                                getFitnessActivities()
+                    getLanguages
+                        if app.api is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getLanguages)
+                            on success
+                                set obj to returned items
+                                if obj is truthy
+                                    vm.locales = obj
+                                    foreach item in locales
+                                        if $scope.userLocale == item.locale
+                                            push item.DisplayName onto $scope.language
+                                            break
+                    getMeasures
+                        if app.api is truthy
+                            create a request model
+                            send a GET request with the request model to the api (getMeasures)
+                            on success
+                                set obj to returned items
+                                if obj is truthy
+                                    vm.units = obj
+                                    foreach item in units
+                                        if $scope.measuresystemid == item.MeasureSystemId
+                                            push item.Name onto $scope.measuresystem
+                                            break
+                    activate
+                        make async calls to get promises
+                            getProfile()
+                            getFavoriteActivities()
+                            getLanguages()
+                            getMeasures()
+                        activate the controller via the common module with empty array of promises and controllerId
+                activate()
         profile.html
+            Profile panel
+                Name
+                Username
+                    Update link
+                    Update input, Save link
+                Display Name
+                    Update link
+                    Update input, Save link
+                Preferred Language
+                    Update link
+                    Update dropdown, Save link
+                Unit of Measure
+                    Update link
+                    Update dropdown, Save link
+            Favorite Activities panel
+                Instructions
+                Allow others to see your favorites? (checkbox)
+                Favorite Activities (list)
+                    item (link to send msg to others with same shared activity; link to delete favorite activity)
+                New Favorite Activity (dropdown)
+                Add button
+
 TEAMS
     controllers.teams.js
         contains data for Teams tab buttons (View, Create, About)
